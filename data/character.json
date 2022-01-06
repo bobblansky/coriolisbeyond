@@ -1,0 +1,9 @@
+[
+    {
+        "id" : 1,
+        "name": "John Doe",
+        "level": 1,
+        "class": "TestClass",
+        "skill_ids": [1,2,4]
+    }
+]

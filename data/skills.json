@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "name": "Skill name 1",
+        "description": "example skill",
+        "cost": 1
+    },
+    {
+        "id": 2,
+        "name": "Skill name 2",
+        "description": "example skill",
+        "cost": 1
+    },
+    {
+        "id" : 3,
+        "name": "Skill name 3",
+        "description": "example skill",
+        "cost": 1
+    },
+    {
+        "id" : 4,
+        "name": "Skill name 4",
+        "description": "example skill",
+        "cost": 1
+    }
+]
