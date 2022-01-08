@@ -1,0 +1,13 @@
+[
+    {
+        "id": 1,
+        "name": "Vulkansyrsa",
+        "bonus": 1,
+        "init": 2,
+        "skada": 2,
+        "krit": 2,
+        "räckvidd": "kort",
+        "övrigt": "Lätt, Liten",
+        "cost": 1
+    }
+]

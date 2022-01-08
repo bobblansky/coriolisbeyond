@@ -5,5 +5,12 @@
         "level": 1,
         "class": "TestClass",
         "skill_ids": [1,2,4]
+    },
+    {
+        "id" : 2,
+        "name": "Karl",
+        "level": 1,
+        "class": "druid",
+        "skill_ids": [1,2,3]
     }
 ]

@@ -18,13 +18,15 @@ use tui::{
     style::{Color, Modifier, Style},
     text::{Span, Spans},
     widgets::{
-        Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table, Tabs,
+        Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table, Tabs, Wrap
     },
     Terminal,
 };
 
 const SKILL_DB_PATH: &str = "./data/skills.json";
 const CHARACTER_DB_PATH: &str = "./data/character.json";
+const WEAPON_DB_PATH: &str = "./data/weapons.json";
+const ITEM_DB_PATH: &str = "./data/items.json";
 
 #[derive(Error, Debug)]
 pub enum Error {
@@ -224,11 +226,31 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             }
                         }
                     }
+                    if active_menu_item == MenuItem::Character {
+                        if let Some(selected) = list_state.selected() {
+                            let amount_skills = read_character_db().expect("can fetch list").len();
+                            if selected >= amount_skills - 1 {
+                                list_state.select(Some(0));
+                            } else {
+                                list_state.select(Some(selected + 1));
+                            }
+                        }
+                    }
                 }
                 KeyCode::Up => {
                     if active_menu_item == MenuItem::Skills {
                         if let Some(selected) = list_state.selected() {
-                            let amount_skills = read_skill_db().expect("can fetch list").len();
+                            let amount_skills = read_character_db().expect("can fetch list").len();
+                            if selected > 0 {
+                                list_state.select(Some(selected - 1));
+                            } else {
+                                list_state.select(Some(amount_skills - 1));
+                            }
+                        }
+                    }
+                    if active_menu_item == MenuItem::Character {
+                        if let Some(selected) = list_state.selected() {
+                            let amount_skills = read_character_db().expect("can fetch list").len();
                             if selected > 0 {
                                 list_state.select(Some(selected - 1));
                             } else {
@@ -242,20 +264,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             Event::Tick => {}
         }
     }
-/*
-    let character_data = fs::read_to_string(CHARACTER_DB_PATH).expect("Unable to read Character file from disk");
-    let character_parse : Character = serde_json::from_str(&character_data)?;
-
-    let skill_data = fs::read_to_string(SKILL_DB_PATH).expect("Unable to read Skill file");
-    let skill_parse : Value = serde_json::from_str(&skill_data)?;
-
-    println!("{:?}\n", skill_parse);
-    println!("{:?}", character_parse);
-    for skills in character_parse.player_character.skill_ids {
-        println!("{}", skills);
-        println!("{:?}", skill_parse[skills.to_string()]);
-    }
-    */
 
     Ok(())
 }
@@ -365,7 +373,7 @@ fn render_character<'a>(list_state: &ListState) -> (List<'a>, Table<'a>) {
 
     (list, character_detail)
 }
-fn render_skills<'a>(list_state: &ListState) -> (List<'a>, Table<'a>) {
+fn render_skills<'a>(list_state: &ListState) -> (List<'a>, Paragraph<'a>) {
     let skills = Block::default()
         .borders(Borders::ALL)
         .style(Style::default().fg(Color::White))
@@ -399,44 +407,15 @@ fn render_skills<'a>(list_state: &ListState) -> (List<'a>, Table<'a>) {
             .add_modifier(Modifier::BOLD),
     );
 
-    let skill_detail = Table::new(vec![Row::new(vec![
-        Cell::from(Span::raw(selected_skill.id.to_string())),
-        Cell::from(Span::raw(selected_skill.name)),
-        Cell::from(Span::raw(selected_skill.description)),
-        Cell::from(Span::raw(selected_skill.cost.to_string())),
-    ])])
-    .header(Row::new(vec![
-        Cell::from(Span::styled(
-            "ID",
-            Style::default().add_modifier(Modifier::BOLD),
-        )),
-        Cell::from(Span::styled(
-            "Name",
-            Style::default().add_modifier(Modifier::BOLD),
-        )),
-        Cell::from(Span::styled(
-            "Description",
-            Style::default().add_modifier(Modifier::BOLD),
-        )),
-        Cell::from(Span::styled(
-            "Cost",
-            Style::default().add_modifier(Modifier::BOLD),
-        )),
-    ]))
-    .block(
-        Block::default()
-            .borders(Borders::ALL)
-            .style(Style::default().fg(Color::White))
-            .title("Detail")
-            .border_type(BorderType::Plain),
-    )
-    .widths(&[
-        Constraint::Percentage(5),
-        Constraint::Percentage(20),
-        Constraint::Percentage(20),
-        Constraint::Percentage(5),
-        Constraint::Percentage(20),
-    ]);
+    let skill_detail = Paragraph::new(selected_skill.description)
+        .wrap(Wrap {trim: true})
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .style(Style::default().fg(Color::White))
+                .title(selected_skill.name)
+                .border_type(BorderType::Plain),
+        );
 
     (list, skill_detail)
 }
