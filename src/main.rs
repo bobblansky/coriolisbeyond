@@ -45,9 +45,11 @@ enum Event<I> {
 struct Character {
     id: usize,
     name: String,
-    level: u8,
+    experience: u8,
     class: String,
-    skill_ids: Vec<u8>
+    icon: String,
+    background: String,
+    skill_ids: Vec<usize>
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -126,7 +128,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .as_ref(),
                 )
                 .split(size);
-
             let copyright = Paragraph::new("Coriolis Beyond 2022 - No rights reserved")
                 .style(Style::default().fg(Color::LightCyan))
                 .alignment(Alignment::Center)
@@ -168,18 +169,41 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     rect.render_widget(render_home(), chunks[1]);
                 },
                 MenuItem::Character => {
+                    //Big chunk, displays enitre character screen
                     let character_chunks = Layout::default()
                         .direction(Direction::Horizontal)
                         .constraints(
-                            [Constraint::Percentage(20), Constraint::Percentage(80)].as_ref(),
+                            [Constraint::Percentage(20), 
+                            Constraint::Percentage(80)].as_ref(),
                         )
                         .split(chunks[1]);
+                    //Divides the middle block into vertical blocks for items/skills/etc
+                    let inside_chunks = Layout::default()
+                        .direction(Direction::Vertical)
+                        //.vertical_margin(1)
+                        .constraints([
+                            Constraint::Percentage(25), 
+                            Constraint::Percentage(25), 
+                            Constraint::Percentage(50)].as_ref(),
+                        )
+                        .split(character_chunks[1]);
                     //get the character and render
                     //left => name
                     //right list character info from json
-                    let (left, right) = render_character(&list_state);
+                    let (left, right, char_skills_ids) = render_character(&list_state);
+                    let char_skills = render_character_skills(char_skills_ids);
+
+                    rect.render_widget(Paragraph::new("Utrustning").block(
+                        Block::default()
+                            .borders(Borders::ALL)
+                            .style(Style::default().fg(Color::White))
+                            .title("Utrustning")
+                            .border_type(BorderType::Plain),
+                    ), inside_chunks[2]);
                     rect.render_stateful_widget(left, character_chunks[0], &mut list_state);
-                    rect.render_widget(right, character_chunks[1]);
+                    rect.render_widget(char_skills, inside_chunks[1]);
+                    rect.render_widget(right, inside_chunks[0]);
+
                 },
                 MenuItem::Skills => {
                     let skill_chunks = Layout::default()
@@ -190,6 +214,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         .split(chunks[1]);
                     //get the skills and render
                     let (left, right) = render_skills(&list_state);
+                    //println!("{:?}", left.len());
                     rect.render_stateful_widget(left, skill_chunks[0], &mut list_state);
                     rect.render_widget(right, skill_chunks[1]);
                 }
@@ -291,7 +316,7 @@ fn render_home<'a>() -> Paragraph<'a> {
     home
 }
 
-fn render_character<'a>(list_state: &ListState) -> (List<'a>, Table<'a>) {
+fn render_character<'a>(list_state: &ListState) -> (List<'a>, Table<'a>, Vec<usize>) {
     //TODO:
     // Render items/skills for selected character
     let character = Block::default()
@@ -301,6 +326,7 @@ fn render_character<'a>(list_state: &ListState) -> (List<'a>, Table<'a>) {
         .border_type(BorderType::Plain);
 
     let character_list = read_character_db().expect("can fetch skill list");
+
     let items: Vec<_> = character_list
         .iter()
         .map(|character| {
@@ -327,32 +353,13 @@ fn render_character<'a>(list_state: &ListState) -> (List<'a>, Table<'a>) {
             .add_modifier(Modifier::BOLD),
     );
 
-    let character_detail = Table::new(vec![Row::new(vec![
-        Cell::from(Span::raw(selected_character.id.to_string())),
-        Cell::from(Span::raw(selected_character.name)),
-        Cell::from(Span::raw(selected_character.level.to_string())),
-        Cell::from(Span::raw(selected_character.class)),
-        //Cell::from(Span::raw(selected_character.skill_ids.)),
-    ])])
+    let character_detail = Table::new(vec![
+        Row::new(vec![Cell::from(Span::raw(selected_character.class))]),
+        Row::new(vec![Cell::from(Span::raw(selected_character.background))]),
+    ])
     .header(Row::new(vec![
         Cell::from(Span::styled(
-            "ID",
-            Style::default().add_modifier(Modifier::BOLD),
-        )),
-        Cell::from(Span::styled(
-            "Name",
-            Style::default().add_modifier(Modifier::BOLD),
-        )),
-        Cell::from(Span::styled(
-            "Level",
-            Style::default().add_modifier(Modifier::BOLD),
-        )),
-        Cell::from(Span::styled(
-            "Class",
-            Style::default().add_modifier(Modifier::BOLD),
-        )),
-        Cell::from(Span::styled(
-            "Skills",
+            selected_character.name,
             Style::default().add_modifier(Modifier::BOLD),
         )),
     ]))
@@ -360,24 +367,19 @@ fn render_character<'a>(list_state: &ListState) -> (List<'a>, Table<'a>) {
         Block::default()
             .borders(Borders::ALL)
             .style(Style::default().fg(Color::White))
-            .title("Detail")
+            .title("Karaktär")
             .border_type(BorderType::Plain),
     )
-    .widths(&[
-        Constraint::Percentage(5),
-        Constraint::Percentage(20),
-        Constraint::Percentage(20),
-        Constraint::Percentage(5),
-        Constraint::Percentage(20),
-    ]);
+    .widths(&[Constraint::Percentage(100)]);
 
-    (list, character_detail)
+    (list, character_detail, selected_character.skill_ids)
 }
+
 fn render_skills<'a>(list_state: &ListState) -> (List<'a>, Paragraph<'a>) {
     let skills = Block::default()
         .borders(Borders::ALL)
         .style(Style::default().fg(Color::White))
-        .title("Skills")
+        .title("Talanger")
         .border_type(BorderType::Plain);
 
     let skill_list = read_skill_db().expect("can fetch skill list");
@@ -408,7 +410,6 @@ fn render_skills<'a>(list_state: &ListState) -> (List<'a>, Paragraph<'a>) {
     );
 
     let skill_detail = Paragraph::new(selected_skill.description)
-        .wrap(Wrap {trim: true})
         .block(
             Block::default()
                 .borders(Borders::ALL)
@@ -418,6 +419,33 @@ fn render_skills<'a>(list_state: &ListState) -> (List<'a>, Paragraph<'a>) {
         );
 
     (list, skill_detail)
+}
+
+fn render_character_skills<'a>(char_skills: Vec<usize>) -> (Table<'a>) {
+    let skill_list = read_skill_db().expect("can fetch skill list");
+
+    let mut rows: Vec<Row> = Vec::new();
+
+    for skill in skill_list {
+        if char_skills.contains(&skill.id) {
+            rows.push(
+                Row::new(vec![Cell::from(Span::raw(skill.name))]));
+            rows.push(
+                Row::new(vec![Cell::from(Span::raw(skill.description))]));
+        }
+    }
+
+    let char_skill_table = Table::new(rows)
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .style(Style::default().fg(Color::White))
+                .title("Talanger")
+                .border_type(BorderType::Plain),
+        )
+        .widths(&[Constraint::Percentage(100)]);
+
+    char_skill_table
 }
 
 fn read_skill_db() -> Result<Vec<Skill>, Error > {

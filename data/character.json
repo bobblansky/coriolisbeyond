@@ -1,16 +1,20 @@
 [
     {
         "id" : 1,
-        "name": "John Doe",
-        "level": 1,
-        "class": "TestClass",
+        "name": "Dhakir Kruth",
+        "experience": 3,
+        "class": "Agent - Underrättelse Officer",
+        "icon": "Gråterskan",
+        "background" : "Förstkommen",
         "skill_ids": [1,2,4]
     },
     {
         "id" : 2,
-        "name": "Karl",
-        "level": 1,
-        "class": "druid",
-        "skill_ids": [1,2,3]
+        "name": "Dakota",
+        "experience": 3,
+        "class": "Dataspindel",
+        "icon" : "Nörden",
+        "background" : "Förstkommen",
+        "skill_ids": [4]
     }
 ]
