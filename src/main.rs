@@ -57,7 +57,7 @@ struct Skill {
     id: usize,
     name: String,
     description: String,
-    cost: usize
+    category: String
 }
 
 #[derive(PartialEq, Copy, Clone, Debug)]
@@ -426,7 +426,7 @@ fn render_skills<'a>(list_state: &ListState) -> (List<'a>, Paragraph<'a>) {
     (list, skill_detail)
 }
 
-fn render_character_skills<'a>(char_skills: Vec<usize>) -> (Table<'a>) {
+fn render_character_skills<'a>(char_skills: Vec<usize>) -> Table<'a> {
     let skill_list = read_skill_db().expect("can fetch skill list");
 
     let mut rows: Vec<Row> = Vec::new();
