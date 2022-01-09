@@ -1,26 +1,33 @@
 [
     {
         "id": 1,
-        "name": "Licensierad",
-        "description": " Du har en licens som ger dig tillgång till begränsad utrustning och vapen, se kapitel 6, Utrustning & vapen. Du kan inhandla den typen av utrustning om du har birr och det finns på den plats där du befinner dig. Att vara licensierad är inte detsamma som att få bära alla typer av vapen öppet på alla platser. Lokala lagar kan hindra dig från att bära vapen som du har rätt att inhandla",
-        "cost": 1
-    },
-    {
-        "id": 2,
         "name": "Bödel",
         "description": " Du vet var du ska slå för att fienden ska falla och inte resa sig. Någonsin mer.\n När du åsamkar en fiende en kritisk skada får du - om du vill - vända på tärningarna så att ental blir tiotal och tvärtom.\n Om ditt offer har talangen Nio liv tar effekterna ut varandra, och den kritiska skadan slås fram normalt.",
         "cost": 1
     },
     {
+        "id" : 2,
+        "name": "Defensiv",
+        "description": " Du är snabb på fötterna och kan enkelt glida undan angrepp i närstrid. Du får modifikation +2 när du använder närkamp för att parera (sid 98)",
+        "cost": 1
+    },
+    {
         "id" : 3,
-        "name": "Skill name 3",
-        "description": "example skill",
+        "name": "Exospecialist",
+        "description": " Du har +2 på rörlighet eller kraftprov för att hantera exon av alla de slag, från skal- och lastexon till rena stridsexon.",
         "cost": 1
     },
     {
         "id" : 4,
-        "name": "Skill name 4",
-        "description": "example skill",
+        "name": "Fraktionsrykte",
+        "description": " Du tillhör en fraktion eller ett gäng och kan använda dess rykte för att få +2 på manipulera när du ska skrämma eller hota någon - \n förutsatt att den du hotar känner till fraktionen och att fraktionen har makt och inflytande på platsen där ni befinner er.",
+        "cost": 1
+    },
+    {
+        "id": 10,
+        "name": "Licensierad",
+        "description": " Du har en licens som ger dig tillgång till begränsad utrustning och vapen, se kapitel 6, Utrustning & vapen.\n Du kan inhandla den typen av utrustning om du har birr och det finns på den plats där du befinner dig.\n Att vara licensierad är inte detsamma som att få bära alla typer av vapen öppet på alla platser.\n Lokala lagar kan hindra dig från att bära vapen som du har rätt att inhandla.",
         "cost": 1
     }
+
 ]

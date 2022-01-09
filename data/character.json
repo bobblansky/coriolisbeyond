@@ -6,7 +6,7 @@
         "class": "Agent - Underrättelse Officer",
         "icon": "Gråterskan",
         "background" : "Förstkommen",
-        "skill_ids": [1,2,4]
+        "skill_ids": [4,10]
     },
     {
         "id" : 2,
