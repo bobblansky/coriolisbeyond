@@ -190,7 +190,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     //get the character and render
                     //left => name
                     //right list character info from json
-                    let (left, right, char_skills_ids) = render_character(&list_state);
+                    let (left, right, char_skills_ids) = render_character(&mut list_state);
                     let char_skills = render_character_skills(char_skills_ids);
 
                     rect.render_widget(Paragraph::new("Utrustning").block(
@@ -316,9 +316,10 @@ fn render_home<'a>() -> Paragraph<'a> {
     home
 }
 
-fn render_character<'a>(list_state: &ListState) -> (List<'a>, Table<'a>, Vec<usize>) {
+fn render_character<'a>(list_state: &mut ListState) -> (List<'a>, Table<'a>, Vec<usize>) {
     //TODO:
     // Render items/skills for selected character
+
     let character = Block::default()
         .borders(Borders::ALL)
         .style(Style::default().fg(Color::White))
@@ -326,6 +327,10 @@ fn render_character<'a>(list_state: &ListState) -> (List<'a>, Table<'a>, Vec<usi
         .border_type(BorderType::Plain);
 
     let character_list = read_character_db().expect("can fetch skill list");
+    //Checks index boundary, sets zero if out of bounds.
+    if list_state.selected().unwrap() > character_list.len() {
+        list_state.select(Some(0));
+    }
 
     let items: Vec<_> = character_list
         .iter()
