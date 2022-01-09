@@ -24,9 +24,45 @@
         "category": "Allmänna talanger"
     },
     {
+        "id" : 5,
+        "name": "Fältmedikurg",
+        "description": " (Kräver Medikurgi) Du kan konsten att stoppa blödningar och behandla svåra skador. Du får +2 på medikurgi när du behandlar någon som är på väg att dö av en kritisk skada. Talangen har ingen effekt på stress.",
+        "category": "Allmänna talanger"
+    },
+    {
+        "id" : 6,
+        "name": "Förförare",
+        "description": " Du har en talang för det romantiska och får +2 på manipulera i situationer då du försöker uppnå något genom att förföra en person.",
+        "category": "Allmänna talanger"
+    },
+    {
+        "id" : 7,
+        "name": "Hassassinens dolkstöt",
+        "description": " Du är en vältränad lönnmördare. När du utför en smygattack (sid 96) med ett Litet vapen får du +2 på slaget i närkamp.",
+        "category": "Allmänna talanger"
+    },
+    {
+        "id" : 8,
+        "name": "Hotfull",
+        "description": " Du kan slå för kraftprov istället för manipulera när du hotar någon för att få din vilja fram.\n Om du når Knapp framgång måste du inte acceptera en motprestation - istället kan motparten vägra att lyda dig, men måste då angripa dig direkt.",
+        "category": "Allmänna talanger"
+    },
+    {
+        "id" : 9,
+        "name": "Människokännare",
+        "description": " Du kan se om någon ljuger eller talar sanning utan att lyckas med manipulera. Handlingen tar någon minut och du kan inte avgöra några detaljer, endast om personen talar sanning eller ljuger.\n Både lögn och halvsanning tolkas som lögn. Varje användning av talangen ger SL 1 mörkerpoäng.",
+        "category": "Allmänna talanger"
+    },
+    {
         "id": 10,
         "name": "Licensierad",
         "description": " Du har en licens som ger dig tillgång till begränsad utrustning och vapen, se kapitel 6, Utrustning & vapen.\n Du kan inhandla den typen av utrustning om du har birr och det finns på den plats där du befinner dig.\n Att vara licensierad är inte detsamma som att få bära alla typer av vapen öppet på alla platser.\n Lokala lagar kan hindra dig från att bära vapen som du har rätt att inhandla.",
+        "category": "Allmänna talanger"
+    },
+    {
+        "id" : 11,
+        "name": "Torped",
+        "description": " När du skjuter mot någon och träffar får du automatiskt en extra sexa att öka effekten med - men bara om du anfaller på nära avstånd.",
         "category": "Allmänna talanger"
     }
 
