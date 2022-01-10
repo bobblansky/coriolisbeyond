@@ -3,6 +3,19 @@
 version = 3
 
 [[package]]
+name = "CoriolisBeyond"
+version = "0.0.1"
+dependencies = [
+ "chrono",
+ "crossterm 0.19.0",
+ "rand",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tui",
+]
+
+[[package]]
 name = "autocfg"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -116,19 +129,6 @@ name = "itoa"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1aab8fc367588b89dcee83ab0fd66b72b50b72fa1904d7095045ace2b0c81c35"
-
-[[package]]
-name = "jsontest"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "crossterm 0.19.0",
- "rand",
- "serde",
- "serde_json",
- "thiserror",
- "tui",
-]
 
 [[package]]
 name = "lazy_static"
