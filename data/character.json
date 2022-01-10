@@ -8,28 +8,28 @@
         "background" : "Förstkommen",
         "skill_ids": [4,10],
         "grundegenskaper":  { 
-            "styrka": 1,
-            "kyla": 1,
-            "skärpa": 1,
-            "känsla": 1
+            "styrka": 2,
+            "kyla": 5,
+            "skärpa": 4,
+            "känsla": 4
         },
         "fardigheter":  { 
-            "kraftprov": 1,
-            "manipulera": 1,
-            "närkamp": 1,
+            "kraftprov": 0,
+            "manipulera":3,
+            "närkamp": 0,
             "rörlighet": 1,
-            "skjutvapen": 1,
-            "smyga": 1,
-            "spaning": 1,
-            "överlevnad": 1,
+            "skjutvapen": 3,
+            "smyga": 0,
+            "spaning": 0,
+            "överlevnad": 0,
             "befäl": 1,
-            "datadjinn": 1,
-            "horistonens_kultur": 1,
-            "medikrugi": 1,
-            "mystiska_krafter": 1,
-            "pilot": 1,
-            "teknologi": 1,
-            "vetenskap": 1
+            "datadjinn": 0,
+            "horistonens_kultur": 0,
+            "medikrugi": 0,
+            "mystiska_krafter": 0,
+            "pilot": 0,
+            "teknologi": 0,
+            "vetenskap": 0
         }
     },
     {
