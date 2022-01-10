@@ -6,7 +6,31 @@
         "class": "Agent - Underrättelse Officer",
         "icon": "Gråterskan",
         "background" : "Förstkommen",
-        "skill_ids": [4,10]
+        "skill_ids": [4,10],
+        "grundegenskaper":  { 
+            "styrka": 1,
+            "kyla": 1,
+            "skärpa": 1,
+            "känsla": 1
+        },
+        "fardigheter":  { 
+            "kraftprov": 1,
+            "manipulera": 1,
+            "närkamp": 1,
+            "rörlighet": 1,
+            "skjutvapen": 1,
+            "smyga": 1,
+            "spaning": 1,
+            "överlevnad": 1,
+            "befäl": 1,
+            "datadjinn": 1,
+            "horistonens_kultur": 1,
+            "medikrugi": 1,
+            "mystiska_krafter": 1,
+            "pilot": 1,
+            "teknologi": 1,
+            "vetenskap": 1
+        }
     },
     {
         "id" : 2,
@@ -15,6 +39,30 @@
         "class": "Dataspindel",
         "icon" : "Nörden",
         "background" : "Förstkommen",
-        "skill_ids": [4]
+        "skill_ids": [4],
+        "grundegenskaper":  { 
+            "styrka": 2,
+            "kyla": 1,
+            "skärpa": 1,
+            "känsla": 1
+        },
+        "fardigheter":  { 
+            "kraftprov": 1,
+            "manipulera": 1,
+            "närkamp": 1,
+            "rörlighet": 1,
+            "skjutvapen": 1,
+            "smyga": 1,
+            "spaning": 1,
+            "överlevnad": 1,
+            "befäl": 1,
+            "datadjinn": 1,
+            "horistonens_kultur": 1,
+            "medikrugi": 1,
+            "mystiska_krafter": 1,
+            "pilot": 1,
+            "teknologi": 1,
+            "vetenskap": 1
+        }
     }
 ]
