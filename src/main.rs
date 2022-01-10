@@ -42,15 +42,7 @@ enum Event<I> {
 }
 
 #[derive(Serialize, Deserialize, Clone)]
-struct Fardigheter {
-    kraftprov: u8,
-    manipulera: u8,
-    närkamp: u8,
-    rörlighet: u8,
-    skjutvapen: u8,
-    smyga: u8,
-    spaning: u8,
-    överlevnad: u8,
+struct Kvalificerade {
     befäl: u8,
     datadjinn: u8,
     horistonens_kultur: u8,
@@ -59,6 +51,25 @@ struct Fardigheter {
     pilot: u8,
     teknologi: u8,
     vetenskap: u8
+}
+
+
+#[derive(Serialize, Deserialize, Clone)]
+struct Allmanna {
+    kraftprov: u8,
+    manipulera: u8,
+    närkamp: u8,
+    rörlighet: u8,
+    skjutvapen: u8,
+    smyga: u8,
+    spaning: u8,
+    överlevnad: u8
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+struct Fardigheter {
+    allmanna: Allmanna,
+    kvalificerade: Kvalificerade
 }
 
 
@@ -214,7 +225,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         //.vertical_margin(1)
                         .constraints([
                             //Max X där X är antal färdigheter + 2 (top/botten -linjer värda 1)
-                            Constraint::Max(18), 
+                            Constraint::Max(19), 
                             Constraint::Percentage(25), 
                             Constraint::Percentage(25)].as_ref(),
                         )
@@ -419,100 +430,133 @@ fn render_character<'a>(list_state: &mut ListState) -> (List<'a>, Table<'a>, Tab
     let fardigheter_table = Table::new(vec![
         Row::new(vec![
             Cell::from("Kraftprov (STY)"),
-            Cell::from(Span::raw(selected_character.fardigheter.kraftprov.to_string())),
+            Cell::from(Span::raw(selected_character.fardigheter.allmanna.kraftprov.to_string())),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.styrka + selected_character.fardigheter.kraftprov).to_string()))]),
+                (selected_character.grundegenskaper.styrka + selected_character.fardigheter.allmanna.kraftprov).to_string()))]),
         Row::new(vec![
             Cell::from("Manipulera (KNS)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.manipulera.to_string())),
+            Cell::from(Span::raw(selected_character.fardigheter.allmanna.manipulera.to_string())),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.känsla + selected_character.fardigheter.manipulera).to_string()))]),
+                (selected_character.grundegenskaper.känsla + selected_character.fardigheter.allmanna.manipulera).to_string()))]),
         Row::new(vec![
             Cell::from("Närkamp (STY)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.närkamp.to_string())),
+            Cell::from(Span::raw(selected_character.fardigheter.allmanna.närkamp.to_string())),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.styrka + selected_character.fardigheter.närkamp).to_string()))]),
+                (selected_character.grundegenskaper.styrka + selected_character.fardigheter.allmanna.närkamp).to_string()))]),
         Row::new(vec![
             Cell::from("Rörlighet (KYL)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.rörlighet.to_string())),
+            Cell::from(Span::raw(selected_character.fardigheter.allmanna.rörlighet.to_string())),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.kyla + selected_character.fardigheter.rörlighet).to_string()))]),
+                (selected_character.grundegenskaper.kyla + selected_character.fardigheter.allmanna.rörlighet).to_string()))]),
         Row::new(vec![
             Cell::from("Skjutvapen (KYL)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.skjutvapen.to_string())),
+            Cell::from(Span::raw(selected_character.fardigheter.allmanna.skjutvapen.to_string())),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.kyla + selected_character.fardigheter.skjutvapen).to_string()))]),
+                (selected_character.grundegenskaper.kyla + selected_character.fardigheter.allmanna.skjutvapen).to_string()))]),
         Row::new(vec![
             Cell::from("Smyga (KYL)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.smyga.to_string())),
+            Cell::from(Span::raw(selected_character.fardigheter.allmanna.smyga.to_string())),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.kyla + selected_character.fardigheter.smyga).to_string()))]),
+                (selected_character.grundegenskaper.kyla + selected_character.fardigheter.allmanna.smyga).to_string()))]),
         Row::new(vec![
             Cell::from("Spaning (SKP)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.spaning.to_string())),
+            Cell::from(Span::raw(selected_character.fardigheter.allmanna.spaning.to_string())),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.skärpa + selected_character.fardigheter.spaning).to_string()))]),
+                (selected_character.grundegenskaper.skärpa + selected_character.fardigheter.allmanna.spaning).to_string()))]),
         Row::new(vec![
             Cell::from("Överlevnad (SKP)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.överlevnad.to_string())),
+            Cell::from(Span::raw(selected_character.fardigheter.allmanna.överlevnad.to_string())),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.skärpa + selected_character.fardigheter.överlevnad).to_string()))]),
+                (selected_character.grundegenskaper.skärpa + selected_character.fardigheter.allmanna.överlevnad).to_string()))]),
+        Row::new(vec![Cell::from("- Kvalificerade -")]),
         Row::new(vec![
             Cell::from("Befäl (KNS)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.befäl.to_string())),
+            Cell::from(Span::raw(selected_character.fardigheter.kvalificerade.befäl.to_string())),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.känsla + selected_character.fardigheter.befäl).to_string()))]),
+                if selected_character.fardigheter.kvalificerade.befäl > 0 {
+                    (selected_character.grundegenskaper.känsla + selected_character.fardigheter.kvalificerade.befäl).to_string()
+                }
+                else { String::from("0") }
+                ))]),
         Row::new(vec![
             Cell::from("Datadjinn (SKP)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.datadjinn.to_string())),
+            Cell::from(Span::raw(selected_character.fardigheter.kvalificerade.datadjinn.to_string())),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.skärpa + selected_character.fardigheter.datadjinn).to_string()))]),
+                if selected_character.fardigheter.kvalificerade.datadjinn > 0 {
+                    (selected_character.grundegenskaper.skärpa + selected_character.fardigheter.kvalificerade.datadjinn).to_string()
+                }
+                else { String::from("0") }
+                ))]),
         Row::new(vec![
             Cell::from("Horisontens kultur (KNS)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.horistonens_kultur.to_string())),
+            Cell::from(Span::raw(selected_character.fardigheter.kvalificerade.horistonens_kultur.to_string())),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.känsla + selected_character.fardigheter.horistonens_kultur).to_string()))]),
+                if selected_character.fardigheter.kvalificerade.horistonens_kultur > 0 {
+                    (selected_character.grundegenskaper.känsla + selected_character.fardigheter.kvalificerade.horistonens_kultur).to_string()
+                }
+                else { String::from("0") }
+                ))]),
         Row::new(vec![
             Cell::from("Medikurgi (SKP)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.medikrugi.to_string())),
+            Cell::from(Span::raw(selected_character.fardigheter.kvalificerade.medikrugi.to_string())),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.skärpa + selected_character.fardigheter.medikrugi).to_string()))]),
+                if selected_character.fardigheter.kvalificerade.medikrugi > 0 {
+                    (selected_character.grundegenskaper.skärpa + selected_character.fardigheter.kvalificerade.medikrugi).to_string()
+                }
+                else { String::from("0") }
+                ))]),
         Row::new(vec![
             Cell::from("Mystiska krafter (KNS)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.mystiska_krafter.to_string())),
+            Cell::from(Span::raw(selected_character.fardigheter.kvalificerade.mystiska_krafter.to_string())),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.känsla + selected_character.fardigheter.mystiska_krafter).to_string()))]),
+                if selected_character.fardigheter.kvalificerade.mystiska_krafter > 0 {
+                    (selected_character.grundegenskaper.känsla + selected_character.fardigheter.kvalificerade.mystiska_krafter).to_string()
+                } 
+                else { String::from("0") }
+            ))]),
         Row::new(vec![
             Cell::from("Pilot (KYL)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.pilot.to_string())),
+            Cell::from(Span::raw(selected_character.fardigheter.kvalificerade.pilot.to_string())),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.kyla + selected_character.fardigheter.pilot).to_string()))]),
+                if selected_character.fardigheter.kvalificerade.pilot > 0 {
+                    (selected_character.grundegenskaper.kyla + selected_character.fardigheter.kvalificerade.pilot).to_string()
+                }
+                else { String::from("0") }
+            ))]),
         Row::new(vec![
             Cell::from("Teknologi (SKP)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.teknologi.to_string())),
+            Cell::from(Span::raw(selected_character.fardigheter.kvalificerade.teknologi.to_string())),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.skärpa + selected_character.fardigheter.teknologi).to_string()))]),
+                if selected_character.fardigheter.kvalificerade.teknologi > 0 {
+                    (selected_character.grundegenskaper.skärpa + selected_character.fardigheter.kvalificerade.teknologi).to_string()
+                }
+                else { String::from("0") }
+            ))]),
         Row::new(vec![
             Cell::from("Vetenskap (SKP)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.vetenskap.to_string())),
+            Cell::from(Span::raw(selected_character.fardigheter.kvalificerade.vetenskap.to_string())),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.skärpa + selected_character.fardigheter.vetenskap).to_string()))]),
+                if selected_character.fardigheter.kvalificerade.vetenskap > 0 {
+                    (selected_character.grundegenskaper.skärpa + selected_character.fardigheter.kvalificerade.vetenskap).to_string()
+                } 
+                else { String::from("0") }
+            ))]),
     ])
     .block(
         Block::default()
@@ -522,10 +566,10 @@ fn render_character<'a>(list_state: &mut ListState) -> (List<'a>, Table<'a>, Tab
             .border_type(BorderType::Plain),
     )
     .widths(&[
-        Constraint::Percentage(25),
+        Constraint::Percentage(30),
+        Constraint::Percentage(2),
         Constraint::Percentage(5),
-        Constraint::Percentage(10),
-        Constraint::Percentage(50)]);
+        Constraint::Percentage(5)]);
 
     let character_detail = Table::new(vec![
         Row::new(vec![
