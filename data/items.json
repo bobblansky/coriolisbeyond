@@ -2,18 +2,11 @@
     {
         "id": 1,
         "name": "Spaningssond",
-        "description": "Sond som sänds ut för att spana i närmiljön på marken. Den svävar fram med ett mindre gravaggregat och kan göra kortare skutt.\n Drivs av cell som ger den 2 timmars användning.\n
-                      ◆ Fjärrstyrd: Styrs via en fjärrkontroll, på upp till extremt avstånd.\n 
-                      Den har +3 pårörlighetvid förflyttningar.
-                       Den som kontrollerar sonden använder spaning för att upptäcka saker där sonden färdas.
-                      Sensorerna kan användas antingen i passivt eller
-                      aktivt läge. Sondens signatur (chans att upptäckas
-                      av andra) är +2 som ökas till +3 om den körs med
-                      aktiva sensorer.\n
-                      ◆ Automatisk:Sonden programmeras meddatadjinn
-                      och följer sedan sin order till punkt och pricka. Den
-                      har aktiva och passiva sensorer, samma signatur som
-                      ovan och ger +3 i spaning. Den rapporterar enligt
-                      sina programmerade kommandon."
+        "description": "Sond som sänds ut för att spana i närmiljön på marken. Den svävar fram med ett mindre gravaggregat och kan göra kortare skutt. Drivs av cell som ger den 2 timmars användning. ◆ Fjärrstyrd: Styrs via en fjärrkontroll, på upp till extremt avstånd. Den har +3 pårörlighetvid förflyttningar. Den som kontrollerar sonden använder spaning för att upptäcka saker där sonden färdas. Sensorerna kan användas antingen i passivt eller aktivt läge. Sondens signatur (chans att upptäckas av andra) är +2 som ökas till +3 om den körs med aktiva sensorer. ◆ Automatisk:Sonden programmeras meddatadjinn och följer sedan sin order till punkt och pricka. Den har aktiva och passiva sensorer, samma signatur som ovan och ger +3 i spaning. Den rapporterar enligt sina programmerade kommandon."
+    },
+    {
+        "id": 2,
+        "name": "Spaningssond",
+        "description": "Sond som sänds ut för att spana i närmiljön på marken. Den svävar fram med ett mindre gravaggregat och kan göra kortare skutt. Drivs av cell som ger den 2 timmars användning. ◆ Fjärrstyrd: Styrs via en fjärrkontroll, på upp till extremt avstånd. Den har +3 pårörlighetvid förflyttningar. Den som kontrollerar sonden använder spaning för att upptäcka saker där sonden färdas. Sensorerna kan användas antingen i passivt eller aktivt läge. Sondens signatur (chans att upptäckas av andra) är +2 som ökas till +3 om den körs med aktiva sensorer. ◆ Automatisk:Sonden programmeras meddatadjinn och följer sedan sin order till punkt och pricka. Den har aktiva och passiva sensorer, samma signatur som ovan och ger +3 i spaning. Den rapporterar enligt sina programmerade kommandon."
     }
 ]

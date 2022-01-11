@@ -3,19 +3,6 @@
 version = 3
 
 [[package]]
-name = "CoriolisBeyond"
-version = "0.0.1"
-dependencies = [
- "chrono",
- "crossterm 0.19.0",
- "rand",
- "serde",
- "serde_json",
- "thiserror",
- "tui",
-]
-
-[[package]]
 name = "autocfg"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -51,6 +38,19 @@ dependencies = [
  "serde",
  "time",
  "winapi",
+]
+
+[[package]]
+name = "coriolis_beyond"
+version = "0.0.1"
+dependencies = [
+ "chrono",
+ "crossterm 0.19.0",
+ "rand",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tui",
 ]
 
 [[package]]

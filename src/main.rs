@@ -18,13 +18,13 @@ use tui::{
     style::{Color, Modifier, Style},
     text::{Span, Spans},
     widgets::{
-        Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table, Tabs, Wrap
+        Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table, Tabs
     },
     Terminal,
 };
-use std::path::Path;
+
 mod banner;
-use banner::banner;
+use banner::BANNER;
 const SKILL_DB_PATH: &str = "./data/skills.json";
 const CHARACTER_DB_PATH: &str = "./data/character.json";
 const WEAPON_DB_PATH: &str = "./data/weapons.json";
@@ -34,8 +34,9 @@ const ITEM_DB_PATH: &str = "./data/items.json";
 #[cfg(test)]
 #[test]
 fn test_path() {
-    const numberofpaths: usize = 4;
-    let pathvec: [&str;numberofpaths] = [SKILL_DB_PATH, CHARACTER_DB_PATH, WEAPON_DB_PATH, ITEM_DB_PATH];
+    use std::path::Path;
+    const NUMPATHS: usize = 4;
+    let pathvec: [&str;NUMPATHS] = [SKILL_DB_PATH, CHARACTER_DB_PATH, WEAPON_DB_PATH, ITEM_DB_PATH];
     for path in pathvec {
         assert_eq!(Path::new(path).exists(), true);
     }
@@ -53,6 +54,13 @@ pub enum Error {
 enum Event<I> {
     Input(I),
     Tick,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+struct Item {
+    id: usize,
+    name: String,
+    description: String,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -135,6 +143,7 @@ enum MenuItem {
     Home,
     Character,
     Skills,
+    Items
 }
 impl From<MenuItem> for usize {
     fn from(input: MenuItem) -> usize {
@@ -142,6 +151,7 @@ impl From<MenuItem> for usize {
             MenuItem::Home => 0,
             MenuItem::Character => 1,
             MenuItem::Skills => 2,
+            MenuItem::Items => 3
         }
     }
 }
@@ -234,7 +244,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             rect.render_widget(tabs, chunks[0]);
             match active_menu_item {
-                //MenuItem::Character => rect.render_widget(render_home(), chunks[1]),
                 MenuItem::Home => {
                     let home_chunks = Layout::default()
                     .direction(Direction::Vertical)
@@ -246,7 +255,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         .as_ref(),
                     )
                     .split(chunks[1]);
-                    let (banner_text,home_instructions) = render_home();
+                    let (banner_text, home_instructions) = render_home();
                     rect.render_widget(banner_text, home_chunks[0]);
                     rect.render_widget(home_instructions, home_chunks[1]);
                 },
@@ -308,11 +317,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             [Constraint::Percentage(20), Constraint::Percentage(80)].as_ref(),
                         )
                         .split(chunks[1]);
-                    //get the skills and render
-                    let (left, right) = render_skills(&list_state);
-                    //println!("{:?}", left.len());
+                    let (left, right) = render_skills(&mut list_state);
+
                     rect.render_stateful_widget(left, skill_chunks[0], &mut list_state);
                     rect.render_widget(right, skill_chunks[1]);
+                },
+                MenuItem::Items => {
+                    let item_chunks = Layout::default()
+                        .direction(Direction::Horizontal)
+                        .constraints(
+                            [Constraint::Percentage(20), Constraint::Percentage(80)].as_ref(),
+                        )
+                        .split(chunks[1]);
+                    let (left, right) = render_items(&mut list_state);
+                    rect.render_stateful_widget(left, item_chunks[0], &mut list_state);
+                    rect.render_widget(right, item_chunks[1]);
                 }
             }
             rect.render_widget(copyright, chunks[2]);
@@ -328,14 +347,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 KeyCode::Char('h') => active_menu_item = MenuItem::Home,
                 KeyCode::Char('c') => active_menu_item = MenuItem::Character,
                 KeyCode::Char('s') => active_menu_item = MenuItem::Skills,
-                KeyCode::Char('a') => {
-                    //add_skill/item/whatever_to_db().expect("can add new random item");
-                    println!("add_random_item_to_db");
-                }
-                KeyCode::Char('d') => {
-                    //remove_item_at_index(&mut item_list_state).expect("can remove item");
-                    println!("remove_item_at_index");
-                }
+                KeyCode::Char('i') => active_menu_item = MenuItem::Items,
                 KeyCode::Down => {
                     if active_menu_item == MenuItem::Skills {
                         if let Some(selected) = list_state.selected() {
@@ -349,8 +361,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     if active_menu_item == MenuItem::Character {
                         if let Some(selected) = list_state.selected() {
-                            let amount_skills = read_character_db().expect("can fetch list").len();
-                            if selected >= amount_skills - 1 {
+                            let amount_characters = read_character_db().expect("can fetch list").len();
+                            if selected >= amount_characters - 1 {
+                                list_state.select(Some(0));
+                            } else {
+                                list_state.select(Some(selected + 1));
+                            }
+                        }
+                    }
+                    if active_menu_item == MenuItem::Items {
+                        if let Some(selected) = list_state.selected() {
+                            let amount_items = read_item_db().expect("can fetch list").len();
+                            if selected >= amount_items - 1 {
                                 list_state.select(Some(0));
                             } else {
                                 list_state.select(Some(selected + 1));
@@ -372,10 +394,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     if active_menu_item == MenuItem::Character {
                         if let Some(selected) = list_state.selected() {
                             let amount_skills = read_character_db().expect("can fetch list").len();
-                            if selected > 0 {
+                            if selected >= amount_skills - 1 {
                                 list_state.select(Some(selected - 1));
                             } else {
                                 list_state.select(Some(amount_skills - 1));
+                            }
+                        }
+                    }
+                    if active_menu_item == MenuItem::Items {
+                        if let Some(selected) = list_state.selected() {
+                            let amount_items = read_item_db().expect("can fetch list").len();
+                            if selected >= amount_items - 1 {
+                                list_state.select(Some(0));
+                            } else {
+                                list_state.select(Some(selected - 1));
                             }
                         }
                     }
@@ -399,10 +431,10 @@ fn render_home<'a>() -> (Paragraph<'a>, Paragraph<'a>) {
             Style::default().fg(Color::LightBlue),
         )]),
         Spans::from(vec![Span::raw("")]),
-        Spans::from(vec![Span::raw("Press 's' to view skills, 'c' to access characters, 'h' to go home and 'q' to quit.")]),
+        Spans::from(vec![Span::raw("Press 's' to view skills, 'c' to access characters, 'i' for items, 'h' to go home and 'q' to quit.")]),
     ])
     .alignment(Alignment::Center);
-    let banner_para = Paragraph::new(banner).alignment(Alignment::Center);
+    let banner_para = Paragraph::new(BANNER).alignment(Alignment::Center);
 
     (banner_para, home)
 }
@@ -632,14 +664,19 @@ fn render_character<'a>(list_state: &mut ListState) -> (List<'a>, Table<'a>, Tab
     (list, character_detail, grundegenskaper_table, fardigheter_table, selected_character.skill_ids, selected_character.weapon_ids)
 }
 
-fn render_skills<'a>(list_state: &ListState) -> (List<'a>, Paragraph<'a>) {
-    let skills = Block::default()
+fn render_skills<'a>(list_state: &mut ListState) -> (List<'a>, Paragraph<'a>) {
+    let skill_block = Block::default()
         .borders(Borders::ALL)
         .style(Style::default().fg(Color::White))
         .title("Talanger")
         .border_type(BorderType::Plain);
 
     let skill_list = read_skill_db().expect("can fetch skill list");
+    //Checks index boundary, sets zero if out of bounds.
+    if list_state.selected().unwrap() > skill_list.len() {
+        list_state.select(Some(0));
+    }
+    
     let items: Vec<_> = skill_list
         .iter()
         .map(|skill| {
@@ -659,7 +696,7 @@ fn render_skills<'a>(list_state: &ListState) -> (List<'a>, Paragraph<'a>) {
         .expect("exists")
         .clone();
 
-    let list = List::new(items).block(skills).highlight_style(
+    let list = List::new(items).block(skill_block).highlight_style(
         Style::default()
             .bg(Color::Yellow)
             .fg(Color::Black)
@@ -704,6 +741,58 @@ fn render_character_skills<'a>(char_skills: Vec<usize>) -> Table<'a> {
 
     char_skill_table
 }
+
+fn render_items<'a>(list_state: &mut ListState) -> (List<'a>, Paragraph<'a>) {
+    let item_block = Block::default()
+        .borders(Borders::ALL)
+        .style(Style::default().fg(Color::White))
+        .title("Talanger")
+        .border_type(BorderType::Plain);
+
+    let item_list = read_item_db().expect("can fetch item list");
+    //Checks index boundary, sets zero if out of bounds.
+    if list_state.selected().unwrap() > item_list.len() {
+        list_state.select(Some(0));
+    }
+
+    let items: Vec<_> = item_list
+        .iter()
+        .map(|i| {
+            ListItem::new(Spans::from(vec![Span::styled(
+                i.name.clone(),
+                Style::default(),
+            )]))
+        })
+        .collect();
+
+    let selected_item = item_list
+        .get(
+            list_state
+                .selected()
+                .expect("there is always a selected item"),
+        )
+        .expect("")
+        .clone();
+
+    let list = List::new(items).block(item_block).highlight_style(
+        Style::default()
+            .bg(Color::Yellow)
+            .fg(Color::Black)
+            .add_modifier(Modifier::BOLD),
+    );
+
+    let item_detail = Paragraph::new(selected_item.description)
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .style(Style::default().fg(Color::White))
+                .title(selected_item.name)
+                .border_type(BorderType::Plain),
+        );
+
+    (list, item_detail)
+}
+
 
 fn render_weapons<'a>(char_weapons: Vec<usize>) -> Table<'a> {
     let weapon_list = read_weapon_db().expect("can fetch skill list");
@@ -753,6 +842,8 @@ fn render_weapons<'a>(char_weapons: Vec<usize>) -> Table<'a> {
     char_weapon_table
 }
 
+
+
 fn read_skill_db() -> Result<Vec<Skill>, Error > {
     let db_content = fs::read_to_string(SKILL_DB_PATH)?;
     let parsed: Vec<Skill> = serde_json::from_str(&db_content)?;
@@ -770,3 +861,10 @@ fn read_weapon_db() -> Result<Vec<Weapon>, Error > {
     let parsed: Vec<Weapon> = serde_json::from_str(&db_content)?;
     Ok(parsed)
 }
+
+fn read_item_db() -> Result<Vec<Item>, Error > {
+    let db_content = fs::read_to_string(ITEM_DB_PATH)?;
+    let parsed: Vec<Item> = serde_json::from_str(&db_content)?;
+    Ok(parsed)
+}
+
