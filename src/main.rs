@@ -22,12 +22,25 @@ use tui::{
     },
     Terminal,
 };
+use std::path::Path;
 mod banner;
 use banner::banner;
 const SKILL_DB_PATH: &str = "./data/skills.json";
 const CHARACTER_DB_PATH: &str = "./data/character.json";
 const WEAPON_DB_PATH: &str = "./data/weapons.json";
 const ITEM_DB_PATH: &str = "./data/items.json";
+
+
+#[cfg(test)]
+#[test]
+fn test_path() {
+    const numberofpaths: usize = 4;
+    let pathvec: [&str;numberofpaths] = [SKILL_DB_PATH, CHARACTER_DB_PATH, WEAPON_DB_PATH, ITEM_DB_PATH];
+    for path in pathvec {
+        assert_eq!(Path::new(path).exists(), true);
+    }
+}
+
 
 #[derive(Error, Debug)]
 pub enum Error {
