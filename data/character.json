@@ -6,7 +6,8 @@
         "class": "Agent - Underrättelse Officer",
         "icon": "Gråterskan",
         "background" : "Förstkommen",
-        "skill_ids": [4,10],
+        "skill_ids": [4, 10],
+        "weapon_ids": [1, 11],
         "grundegenskaper":  { 
             "styrka": 2,
             "kyla": 5,
@@ -44,6 +45,7 @@
         "icon" : "Nörden",
         "background" : "Förstkommen",
         "skill_ids": [4],
+        "weapon_ids": [1, 11],
         "grundegenskaper":  { 
             "styrka": 2,
             "kyla": 1,

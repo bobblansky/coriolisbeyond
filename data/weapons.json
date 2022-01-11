@@ -8,6 +8,17 @@
         "krit": 2,
         "räckvidd": "kort",
         "övrigt": "Lätt, Liten",
-        "cost": 1
+        "cost": 700
+    },
+    {
+        "id": 11,
+        "name": "Vulkan PFV",
+        "bonus": 1,
+        "init": 1,
+        "skada": 3,
+        "krit": 2,
+        "räckvidd": "kort",
+        "övrigt": "Automateld, Liten",
+        "cost": 2500
     }
 ]
