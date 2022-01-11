@@ -58,14 +58,14 @@ enum Event<I> {
 #[derive(Serialize, Deserialize, Clone)]
 struct Weapon {
     id: usize,
-    name: String,
+    namn: String,
     bonus: u8,
     init: u8,
     skada: u8,
     krit: u8,
     räckvidd: String,
     övrigt: String,
-    cost: u32
+    kostnad: u32
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -240,8 +240,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .direction(Direction::Vertical)
                     .constraints(
                         [
-                            Constraint::Percentage(50),
-                            Constraint::Percentage(50),
+                            Constraint::Min(30),
+                            Constraint::Min(10),
                         ]
                         .as_ref(),
                     )
@@ -714,7 +714,7 @@ fn render_weapons<'a>(char_weapons: Vec<usize>) -> Table<'a> {
         if char_weapons.contains(&weapon.id) {
             rows.push(
                 Row::new(vec![
-                    Cell::from(Span::raw(weapon.name)),
+                    Cell::from(Span::raw(weapon.namn)),
                     Cell::from(Span::raw(weapon.bonus.to_string())),
                     Cell::from(Span::raw(weapon.init.to_string())),
                     Cell::from(Span::raw(weapon.skada.to_string())),
