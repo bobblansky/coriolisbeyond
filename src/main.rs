@@ -2,7 +2,8 @@ use serde_json::{Value};
 use chrono::prelude::*;
 use crossterm::{
     event::{self, Event as CEvent, KeyCode},
-    terminal::{disable_raw_mode, enable_raw_mode},
+    execute,
+    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use rand::{distributions::Alphanumeric, prelude::*};
 use serde::{Deserialize, Serialize};
@@ -183,7 +184,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     });
 
 
-    let stdout = io::stdout();
+    let mut stdout = io::stdout();
+    execute!(stdout, EnterAlternateScreen)?;
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
     terminal.clear()?;
@@ -340,6 +342,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         match rx.recv()? {
             Event::Input(event) => match event.code {
                 KeyCode::Char('q') => {
+                    terminal.clear()?;
+                    let mut stdout = io::stdout();
+                    execute!(stdout, LeaveAlternateScreen)?;
                     disable_raw_mode()?;
                     terminal.show_cursor()?;
                     break;
