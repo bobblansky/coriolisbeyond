@@ -1,18 +1,15 @@
-use serde_json::{Value};
-use chrono::prelude::*;
+use std::fs;
+use std::io;
+use std::thread;
+use std::sync::mpsc;
+use thiserror::Error;
+use serde::{Deserialize, Serialize};
+use std::time::{Duration, Instant};
 use crossterm::{
     event::{self, Event as CEvent, KeyCode},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use rand::{distributions::Alphanumeric, prelude::*};
-use serde::{Deserialize, Serialize};
-use std::fs;
-use std::io;
-use std::sync::mpsc;
-use std::thread;
-use std::time::{Duration, Instant};
-use thiserror::Error;
 use tui::{
     backend::CrosstermBackend,
     layout::{Alignment, Constraint, Direction, Layout},
@@ -31,18 +28,14 @@ const CHARACTER_DB_PATH: &str = "./data/character.json";
 const WEAPON_DB_PATH: &str = "./data/weapons.json";
 const ITEM_DB_PATH: &str = "./data/items.json";
 
-
 #[cfg(test)]
 #[test]
 fn test_path() {
     use std::path::Path;
     const NUMPATHS: usize = 4;
-    let pathvec: [&str;NUMPATHS] = [SKILL_DB_PATH, CHARACTER_DB_PATH, WEAPON_DB_PATH, ITEM_DB_PATH];
-    for path in pathvec {
-        assert_eq!(Path::new(path).exists(), true);
-    }
+    let paths: [&str;NUMPATHS] = [SKILL_DB_PATH, CHARACTER_DB_PATH, WEAPON_DB_PATH, ITEM_DB_PATH];
+    paths.map(|p| assert_eq!(Path::new(p).exists(), true));
 }
-
 
 #[derive(Error, Debug)]
 pub enum Error {
@@ -127,6 +120,7 @@ struct Character {
     background: String,
     skill_ids: Vec<usize>,
     weapon_ids: Vec<usize>,
+    gear_ids: Vec<usize>,
     grundegenskaper: Grundegenskaper,
     fardigheter: Fardigheter
 }
@@ -183,18 +177,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     });
 
-
     let mut stdout = io::stdout();
     execute!(stdout, EnterAlternateScreen)?;
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
     terminal.clear()?;
 
-    let menu_titles = vec!["Coriolis", "Character", "Skills", "Quit"];
+    let menu_titles = vec!["Hem", "Karaktärer", "Talanger", "Utrustning", "Avsluta"];
     let mut active_menu_item = MenuItem::Home;
     let mut list_state = ListState::default();
     list_state.select(Some(0));
-
+    let mut skillcounter = 0;
+    let mut charcounter = 0;
+    let mut itemcounter = 0;
+    let mut homecounter = 0;
+    let mut current_menu: MenuItem = MenuItem::Home;
     loop {
         terminal.draw(|rect| {
             let size = rect.size();
@@ -245,8 +242,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .divider(Span::raw("|"));
 
             rect.render_widget(tabs, chunks[0]);
+            
+            // state machine implementation?
+            let refresh_needed : bool = current_menu == active_menu_item;
             match active_menu_item {
                 MenuItem::Home => {
+                    homecounter = homecounter + 1;
                     let home_chunks = Layout::default()
                     .direction(Direction::Vertical)
                     .constraints(
@@ -262,6 +263,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     rect.render_widget(home_instructions, home_chunks[1]);
                 },
                 MenuItem::Character => {
+                    if refresh_needed {
+                    //derbug counter
+                    charcounter = charcounter + 1;
                     //Big chunk, displays enitre character screen
                     let character_chunks = Layout::default()
                         .direction(Direction::Horizontal)
@@ -294,25 +298,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     //get the character and render
                     //left => name
                     //right list character info from json
-                    let (left, right, grundegenskaper, fardigheter, char_skills_ids, weapon_ids) = render_character(&mut list_state);
+                    let (left, right, grundegenskaper, fardigheter, char_skills_ids, weapon_ids, gear_ids) = render_character(&mut list_state);
                     let char_skills = render_character_skills(char_skills_ids);
                     let weapons = render_weapons(weapon_ids);
-                    rect.render_widget(Paragraph::new("Utrustning").block(
-                        Block::default()
-                            .borders(Borders::ALL)
-                            .style(Style::default().fg(Color::White))
-                            .title("Utrustning")
-                            .border_type(BorderType::Plain),
-                    ), inside_chunks[2]);
+                    let items = render_character_items(gear_ids);
+                    rect.render_widget(items, inside_chunks[2]);
                     rect.render_stateful_widget(left, character_chunks[0], &mut list_state);
                     rect.render_widget(char_skills, inside_chunks[1]);
                     rect.render_widget(right, character_chunk[0]);
                     rect.render_widget(grundegenskaper, character_chunk[1]);
                     rect.render_widget(fardigheter, character_chunk[2]);
                     rect.render_widget(weapons, inside_chunks[3])
+                    }
 
                 },
+                //debug
                 MenuItem::Skills => {
+                    //derbug counter
+                    skillcounter = skillcounter + 1;
                     let skill_chunks = Layout::default()
                         .direction(Direction::Horizontal)
                         .constraints(
@@ -325,6 +328,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     rect.render_widget(right, skill_chunks[1]);
                 },
                 MenuItem::Items => {
+                    //derbug counter
+                    itemcounter = itemcounter + 1;
                     let item_chunks = Layout::default()
                         .direction(Direction::Horizontal)
                         .constraints(
@@ -338,10 +343,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
             rect.render_widget(copyright, chunks[2]);
         })?;
-
+        
+        current_menu = active_menu_item; 
         match rx.recv()? {
             Event::Input(event) => match event.code {
-                KeyCode::Char('q') => {
+                KeyCode::Char('a') => {
                     terminal.clear()?;
                     let mut stdout = io::stdout();
                     execute!(stdout, LeaveAlternateScreen)?;
@@ -350,9 +356,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     break;
                 }
                 KeyCode::Char('h') => active_menu_item = MenuItem::Home,
-                KeyCode::Char('c') => active_menu_item = MenuItem::Character,
-                KeyCode::Char('s') => active_menu_item = MenuItem::Skills,
-                KeyCode::Char('i') => active_menu_item = MenuItem::Items,
+                KeyCode::Char('k') => active_menu_item = MenuItem::Character,
+                KeyCode::Char('t') => active_menu_item = MenuItem::Skills,
+                KeyCode::Char('u') => active_menu_item = MenuItem::Items,
                 KeyCode::Down => {
                     if active_menu_item == MenuItem::Skills {
                         if let Some(selected) = list_state.selected() {
@@ -422,36 +428,35 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             Event::Tick => {}
         }
     }
-
+    println!("Number of skill db reads: {:?}", skillcounter);
+    println!("Number of character db reads: {:?}", charcounter);
+    println!("Number of item db reads: {:?}", itemcounter);
     Ok(())
 }
 
 fn render_home<'a>() -> (Paragraph<'a>, Paragraph<'a>) {
     let home = Paragraph::new(vec![
         Spans::from(vec![Span::raw("")]),
-        Spans::from(vec![Span::raw("Welcome to")]),
+        Spans::from(vec![Span::raw("Välkommen till")]),
         Spans::from(vec![Span::raw("")]),
         Spans::from(vec![Span::styled(
             "Coriolis Beyond",
             Style::default().fg(Color::LightBlue),
         )]),
         Spans::from(vec![Span::raw("")]),
-        Spans::from(vec![Span::raw("Press 's' to view skills, 'c' to access characters, 'i' for items, 'h' to go home and 'q' to quit.")]),
+        Spans::from(vec![Span::raw("Tryck 't' för att se talanger, 'k' för att karaktärer, 'u' för utrustning, 'h' för hemmavyn and 'a' för att avsluta.")]),
     ])
     .alignment(Alignment::Center);
-    let banner_para = Paragraph::new(BANNER).alignment(Alignment::Center);
+    let banner_para = Paragraph::new(BANNER).alignment(Alignment::Center).style(Style::default().fg(Color::Cyan));
 
     (banner_para, home)
 }
 
-fn render_character<'a>(list_state: &mut ListState) -> (List<'a>, Table<'a>, Table<'a>, Table<'a>, Vec<usize>, Vec<usize>) {
-    //TODO:
-    // Render items/skills for selected character
-
+fn render_character<'a>(list_state: &mut ListState) -> (List<'a>, Table<'a>, Table<'a>, Table<'a>, Vec<usize>, Vec<usize>, Vec<usize>) {
     let character = Block::default()
         .borders(Borders::ALL)
         .style(Style::default().fg(Color::White))
-        .title("Character")
+        .title("Karaktärer")
         .border_type(BorderType::Plain);
 
     let character_list = read_character_db().expect("can fetch skill list");
@@ -666,7 +671,7 @@ fn render_character<'a>(list_state: &mut ListState) -> (List<'a>, Table<'a>, Tab
     .widths(&[Constraint::Percentage(20), Constraint::Percentage(80)]);
 
 
-    (list, character_detail, grundegenskaper_table, fardigheter_table, selected_character.skill_ids, selected_character.weapon_ids)
+    (list, character_detail, grundegenskaper_table, fardigheter_table, selected_character.skill_ids, selected_character.weapon_ids, selected_character.gear_ids)
 }
 
 fn render_skills<'a>(list_state: &mut ListState) -> (List<'a>, Paragraph<'a>) {
@@ -747,11 +752,35 @@ fn render_character_skills<'a>(char_skills: Vec<usize>) -> Table<'a> {
     char_skill_table
 }
 
+fn render_character_items<'a>(char_skills: Vec<usize>) -> List<'a> {
+    let item_list = read_item_db().expect("can fetch item list");
+    let mut items: Vec<_> = Vec::new();
+    let item_block = Block::default()
+        .borders(Borders::ALL)
+        .style(Style::default().fg(Color::White))
+        .title("Utrustning")
+        .border_type(BorderType::Plain);
+
+    for skill in item_list {
+        if char_skills.contains(&skill.id) {
+            items.push(
+                ListItem::new(Spans::from(vec![
+                    (Span::raw(skill.name.clone()))
+                ]))
+            );
+        }
+    }
+
+    let list = List::new(items).block(item_block);
+    
+    list
+}
+
 fn render_items<'a>(list_state: &mut ListState) -> (List<'a>, Paragraph<'a>) {
     let item_block = Block::default()
         .borders(Borders::ALL)
         .style(Style::default().fg(Color::White))
-        .title("Talanger")
+        .title("Utrustning")
         .border_type(BorderType::Plain);
 
     let item_list = read_item_db().expect("can fetch item list");
@@ -831,8 +860,8 @@ fn render_weapons<'a>(char_weapons: Vec<usize>) -> Table<'a> {
             Block::default()
                 .borders(Borders::ALL)
                 .style(Style::default().fg(Color::White))
-                .title(" Vapen ")
-                .border_type(BorderType::Plain),
+                        .title("Vapen")
+                        .border_type(BorderType::Plain),
         )
         .widths(&[
             Constraint::Min(20),

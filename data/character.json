@@ -8,6 +8,7 @@
         "background" : "Förstkommen",
         "skill_ids": [4, 10],
         "weapon_ids": [1, 11],
+        "gear_ids": [1,2],
         "grundegenskaper":  { 
             "styrka": 2,
             "kyla": 5,
@@ -46,6 +47,7 @@
         "background" : "Förstkommen",
         "skill_ids": [4],
         "weapon_ids": [1, 11],
+        "gear_ids": [1],
         "grundegenskaper":  { 
             "styrka": 2,
             "kyla": 1,
