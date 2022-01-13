@@ -58,6 +58,13 @@ struct Item {
 }
 
 #[derive(Serialize, Deserialize, Clone)]
+struct Appearance {
+    face: String,
+    clothing: String,
+}
+
+
+#[derive(Serialize, Deserialize, Clone)]
 struct Weapon {
     id: usize,
     namn: String,
@@ -67,7 +74,7 @@ struct Weapon {
     krit: u8,
     räckvidd: String,
     övrigt: String,
-    kostnad: u32
+    kostnad: u32,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -79,7 +86,7 @@ struct Kvalificerade {
     mystiska_krafter: u8,
     pilot: u8,
     teknologi: u8,
-    vetenskap: u8
+    vetenskap: u8,
 }
 
 
@@ -92,13 +99,13 @@ struct Allmanna {
     skjutvapen: u8,
     smyga: u8,
     spaning: u8,
-    överlevnad: u8
+    överlevnad: u8,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
 struct Fardigheter {
     allmanna: Allmanna,
-    kvalificerade: Kvalificerade
+    kvalificerade: Kvalificerade,
 }
 
 
@@ -107,7 +114,7 @@ struct Grundegenskaper {
     styrka: u8,
     kyla: u8,
     skärpa: u8,
-    känsla: u8
+    känsla: u8,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -121,8 +128,9 @@ struct Character {
     skill_ids: Vec<usize>,
     weapon_ids: Vec<usize>,
     gear_ids: Vec<usize>,
+    appearance: Appearance,
     grundegenskaper: Grundegenskaper,
-    fardigheter: Fardigheter
+    fardigheter: Fardigheter,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -130,7 +138,7 @@ struct Skill {
     id: usize,
     name: String,
     description: String,
-    category: String
+    category: String,
 }
 
 #[derive(PartialEq, Copy, Clone, Debug)]
@@ -138,7 +146,7 @@ enum MenuItem {
     Home,
     Character,
     Skills,
-    Items
+    Items,
 }
 impl From<MenuItem> for usize {
     fn from(input: MenuItem) -> usize {
@@ -277,7 +285,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     //Divides the middle block into vertical blocks for items/skills/etc
                     let inside_chunks = Layout::default()
                         .direction(Direction::Vertical)
-                        //.vertical_margin(1)
                         .constraints([
                             //Max X där X är antal färdigheter + 2 (top/botten -linjer värda 1)
                             Constraint::Max(19), 
@@ -288,7 +295,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         .split(character_chunks[1]);
                     let character_chunk = Layout::default()
                         .direction(Direction::Horizontal)
-                        //.vertical_margin(1)
                         .constraints([
                             Constraint::Percentage(40),
                             Constraint::Percentage(15), 
@@ -659,7 +665,15 @@ fn render_character<'a>(list_state: &mut ListState) -> (List<'a>, Table<'a>, Tab
             Cell::from(Span::raw(selected_character.background))]),
         Row::new(vec![
             Cell::from(Span::raw("Ikon: ")),
-            Cell::from(Span::raw(selected_character.icon))])
+            Cell::from(Span::raw(selected_character.icon))]),
+        Row::new(vec![Cell::from(Span::raw("\n\n"))]),
+        Row::new(vec![Cell::from(Span::raw("Utseende\n "))]),
+        Row::new(vec![
+            Cell::from(Span::raw("Ansikte: ")),
+            Cell::from(Span::raw(selected_character.appearance.face))]),
+        Row::new(vec![
+            Cell::from(Span::raw("Kläder: ")),
+            Cell::from(Span::raw(selected_character.appearance.clothing))]),
     ])
     .block(
         Block::default()
@@ -668,10 +682,17 @@ fn render_character<'a>(list_state: &mut ListState) -> (List<'a>, Table<'a>, Tab
             .title(selected_character.name)
             .border_type(BorderType::Plain),
     )
-    .widths(&[Constraint::Percentage(20), Constraint::Percentage(80)]);
+    .widths(&[Constraint::Percentage(15), Constraint::Percentage(80)]);
 
 
-    (list, character_detail, grundegenskaper_table, fardigheter_table, selected_character.skill_ids, selected_character.weapon_ids, selected_character.gear_ids)
+    (list, 
+    character_detail, 
+    grundegenskaper_table,
+    fardigheter_table, 
+    selected_character.skill_ids, 
+    selected_character.weapon_ids,
+    selected_character.gear_ids,
+    )
 }
 
 fn render_skills<'a>(list_state: &mut ListState) -> (List<'a>, Paragraph<'a>) {
