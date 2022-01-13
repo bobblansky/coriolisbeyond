@@ -1,0 +1,24 @@
+[
+    {
+        "id": 1,
+        "namn": "Vulkansyrsa",
+        "bonus": 1,
+        "init": 2,
+        "skada": 2,
+        "krit": 2,
+        "räckvidd": "kort",
+        "övrigt": "Lätt, Liten",
+        "kostnad": 700
+    },
+    {
+        "id": 11,
+        "namn": "Vulkan PFV",
+        "bonus": 1,
+        "init": 1,
+        "skada": 3,
+        "krit": 2,
+        "räckvidd": "kort",
+        "övrigt": "Automateld, Liten",
+        "kostnad": 2500
+    }
+]

@@ -1,0 +1,80 @@
+[
+    {
+        "id" : 1,
+        "name": "Dhakir Kruth",
+        "experience": 3,
+        "class": "Agent - Underrättelse Officer",
+        "icon": "Gråterskan",
+        "background" : "Förstkommen",
+        "skill_ids": [4, 10],
+        "weapon_ids": [1, 11],
+        "gear_ids": [1,2],
+        "grundegenskaper":  { 
+            "styrka": 2,
+            "kyla": 5,
+            "skärpa": 4,
+            "känsla": 4
+        },
+        "fardigheter":  { 
+            "allmanna":  {
+                "kraftprov": 0,
+                "manipulera":3,
+                "närkamp": 0,
+                "rörlighet": 1,
+                "skjutvapen": 3,
+                "smyga": 0,
+                "spaning": 0,
+                "överlevnad": 0
+            },
+            "kvalificerade": {
+                "befäl": 1,
+                "datadjinn": 0,
+                "horistonens_kultur": 0,
+                "medikrugi": 0,
+                "mystiska_krafter": 0,
+                "pilot": 0,
+                "teknologi": 0,
+                "vetenskap": 0
+                }
+        }
+    },
+    {
+        "id" : 2,
+        "name": "Dakota",
+        "experience": 3,
+        "class": "Dataspindel",
+        "icon" : "Nörden",
+        "background" : "Förstkommen",
+        "skill_ids": [4],
+        "weapon_ids": [1, 11],
+        "gear_ids": [1],
+        "grundegenskaper":  { 
+            "styrka": 2,
+            "kyla": 1,
+            "skärpa": 1,
+            "känsla": 1
+        },
+        "fardigheter":  { 
+            "allmanna":  {
+                "kraftprov": 0,
+                "manipulera":3,
+                "närkamp": 0,
+                "rörlighet": 1,
+                "skjutvapen": 3,
+                "smyga": 0,
+                "spaning": 0,
+                "överlevnad": 0
+            },
+            "kvalificerade": {
+                "befäl": 1,
+                "datadjinn": 0,
+                "horistonens_kultur": 0,
+                "medikrugi": 0,
+                "mystiska_krafter": 0,
+                "pilot": 0,
+                "teknologi": 0,
+                "vetenskap": 0
+                }
+        }
+    }
+]
