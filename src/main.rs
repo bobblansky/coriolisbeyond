@@ -11,14 +11,14 @@ use crossterm::{
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use tui::{
-    backend::CrosstermBackend,
-    layout::{Alignment, Constraint, Direction, Layout},
+    backend::{Backend,CrosstermBackend},
+    layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     text::{Span, Spans},
     widgets::{
-        Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table, Tabs
+        Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table, Tabs, Wrap, Clear
     },
-    Terminal,
+    Terminal, Frame,
 };
 
 mod banner;
@@ -194,6 +194,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     });
 
+    let mut show_skill_popup = false;
+    let mut select_skill_list = false;
     let mut stdout = io::stdout();
     execute!(stdout, EnterAlternateScreen)?;
     let backend = CrosstermBackend::new(stdout);
@@ -203,12 +205,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let menu_titles = vec!["Hem", "Karaktärer", "Talanger", "Utrustning", "Avsluta"];
     let mut active_menu_item = MenuItem::Home;
     let mut list_state = ListState::default();
+    let mut list_state_skills = ListState::default();
     list_state.select(Some(0));
     let mut skillcounter = 0;
     let mut charcounter = 0;
     let mut itemcounter = 0;
     let mut homecounter = 0;
     let mut current_menu: MenuItem = MenuItem::Home;
+    list_state_skills.select(Some(0));
+
     loop {
         terminal.draw(|rect| {
             let size = rect.size();
@@ -321,18 +326,27 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     //left => name
                     //right list character info from json
                     let (left, right, grundegenskaper, fardigheter, char_skills_ids, weapon_ids, gear_ids, armor_ids) = render_character(&mut list_state);
-                    let char_skills = render_character_skills(char_skills_ids);
+                    let (left1, right2) = render_char_skills(&mut list_state_skills, &char_skills_ids); // char_skills
                     let weapons = render_character_weapons(weapon_ids);
-                    let items = render_character_items(gear_ids);
                     let armor = render_character_armor(armor_ids);
+                    let items = render_character_items(gear_ids);
                     rect.render_widget(items, talent_gear_chunk[1]);
-                    rect.render_stateful_widget(left, character_chunks[0], &mut list_state);
-                    rect.render_widget(char_skills, talent_gear_chunk[0]);
+                    if select_skill_list{
+                        rect.render_widget(left, character_chunks[0]);
+                        rect.render_stateful_widget(left1, talent_gear_chunk[0], &mut list_state_skills);
+                    }
+                    else{
+                        rect.render_stateful_widget(left, character_chunks[0], &mut list_state);
+                        rect.render_widget(left1, talent_gear_chunk[0]);
+                    }
                     rect.render_widget(right, character_chunk[0]);
                     rect.render_widget(grundegenskaper, character_chunk[1]);
                     rect.render_widget(fardigheter, character_chunk[2]);
                     rect.render_widget(armor, inside_chunks[2]);
-                    rect.render_widget(weapons, inside_chunks[3])
+                    rect.render_widget(weapons, inside_chunks[3]);
+                    if show_skill_popup{
+                        render_popup(rect, &mut list_state_skills, char_skills_ids)
+                    }
                     }
 
                 },
@@ -395,12 +409,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         }
                     }
                     if active_menu_item == MenuItem::Character {
-                        if let Some(selected) = list_state.selected() {
-                            let amount_characters = read_character_db().expect("can fetch list").len();
-                            if selected >= amount_characters - 1 {
-                                list_state.select(Some(0));
-                            } else {
-                                list_state.select(Some(selected + 1));
+                        if select_skill_list {
+                            if let Some(selected) = list_state_skills.selected() {
+                                let amount_characters = read_character_db().expect("can fetch list").len();
+                                if selected >0 {
+                                    list_state_skills.select(Some(0));
+                                } else {
+                                    list_state_skills.select(Some(selected + 1));
+                                }
+                            }
+                        }
+                        else{
+                            if let Some(selected) = list_state.selected() {
+                                let amount_characters = read_character_db().expect("can fetch list").len();
+                                if selected >= amount_characters - 1 {
+                                    list_state.select(Some(0));
+                                } else {
+                                    list_state.select(Some(selected + 1));
+                                }
                             }
                         }
                     }
@@ -427,14 +453,41 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         }
                     }
                     if active_menu_item == MenuItem::Character {
-                        if let Some(selected) = list_state.selected() {
-                            let amount_skills = read_character_db().expect("can fetch list").len();
-                            if selected >= amount_skills - 1 {
-                                list_state.select(Some(selected - 1));
-                            } else {
-                                list_state.select(Some(amount_skills - 1));
+                        if select_skill_list {
+                            if let Some(selected) = list_state_skills.selected() {
+                                let amount_skills = read_character_db().expect("can fetch list").len();
+                                if selected >0 {
+                                    list_state_skills.select(Some(selected - 1));
+                                } else {
+                                    list_state_skills.select(Some(amount_skills - 1));
+                                }
                             }
                         }
+                        else {
+                            if let Some(selected) = list_state.selected() {
+                                let amount_characters = read_character_db().expect("can fetch list").len();
+                                if selected >= amount_characters - 1 {
+                                    list_state.select(Some(selected - 1));
+                                } else {
+                                    list_state.select(Some(amount_characters - 1));
+                                }
+                            }
+                        }
+                    }
+                }
+                KeyCode::Right => {
+                    if active_menu_item == MenuItem::Character {
+                        select_skill_list = true;
+                    }
+                }
+                KeyCode::Left => {
+                    if active_menu_item == MenuItem::Character {
+                        select_skill_list = false;
+                    }
+                }
+                KeyCode::Enter => {
+                    if active_menu_item == MenuItem::Character {
+                        show_skill_popup = !show_skill_popup;
                     }
                     if active_menu_item == MenuItem::Items {
                         if let Some(selected) = list_state.selected() {
@@ -447,6 +500,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         }
                     }
                 }
+                KeyCode::Right => {
+                    if active_menu_item == MenuItem::Character {
+                        select_skill_list = true;
+                    }
+                }
+                KeyCode::Left => {
+                    if active_menu_item == MenuItem::Character {
+                        select_skill_list = false;
+                    }
+                }
+                KeyCode::Enter => {
+                    if active_menu_item == MenuItem::Character {
+                        show_skill_popup = !show_skill_popup;
+                    }
+                }
                 _ => {}
             },
             Event::Tick => {}
@@ -456,6 +524,61 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Number of character db reads: {:?}", charcounter);
     println!("Number of item db reads: {:?}", itemcounter);
     Ok(())
+}
+
+fn render_popup<B: Backend>(rect: &mut Frame<B>, list_state: &ListState, char_skills: Vec<usize>){
+    let skills = read_skill_db().expect("can fetch skill list");
+    let mut skill_char: Vec<_> = Vec::new();
+    for skill in skills{
+        if char_skills.contains(&skill.id){
+            skill_char.push(skill);
+        }
+    }
+
+    let selected_skill = skill_char
+    .get(
+        list_state
+            .selected()
+            .expect("there is always a selected skill"),
+    )
+    .expect("exists")
+    .clone();
+
+    let size = rect.size();
+    let style = Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD);
+    let span = Span::styled(selected_skill.name, style);
+    let block = Block::default().title(span).borders(Borders::ALL);
+    let pop_up = Paragraph::new(selected_skill.description).wrap(Wrap{trim:true}).block(block);
+
+    let area = centered_rect(64, 36, size);
+    rect.render_widget(Clear, area);
+    rect.render_widget(pop_up, area);
+}
+
+fn centered_rect(percent_x: u16, percent_y: u16, r: Rect) -> Rect {
+    let popup_layout = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints(
+            [
+                Constraint::Percentage((100 - percent_y) / 2),
+                Constraint::Percentage(percent_y),
+                Constraint::Percentage((100 - percent_y) / 2),
+            ]
+            .as_ref(),
+        )
+        .split(r);
+
+    Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints(
+            [
+                Constraint::Percentage((100 - percent_x) / 2),
+                Constraint::Percentage(percent_x),
+                Constraint::Percentage((100 - percent_x) / 2),
+            ]
+            .as_ref(),
+        )
+        .split(popup_layout[1])[1]
 }
 
 fn render_home<'a>() -> (Paragraph<'a>, Paragraph<'a>) {
@@ -747,6 +870,64 @@ fn render_skills<'a>(list_state: &mut ListState) -> (List<'a>, Paragraph<'a>) {
         .clone();
 
     let list = List::new(items).block(skill_block).highlight_style(
+        Style::default()
+            .bg(Color::Yellow)
+            .fg(Color::Black)
+            .add_modifier(Modifier::BOLD),
+    );
+
+    let skill_detail = Paragraph::new(selected_skill.description)
+        .wrap(Wrap{trim:true})
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .style(Style::default().fg(Color::White))
+                .title(selected_skill.name)
+                .border_type(BorderType::Plain),
+        );
+
+    (list, skill_detail)
+}
+
+fn render_char_skills<'a>(list_state: &mut ListState, char_skills: &Vec<usize>) -> (List<'a>, Paragraph<'a>) {
+    let skills = Block::default()
+    .borders(Borders::ALL)
+    .style(Style::default().fg(Color::White))
+    .title("Talanger")
+    .border_type(BorderType::Plain);
+
+    let skill_list = read_skill_db().expect("can fetch skill list");
+    let mut skill_char: Vec<_> = Vec::new();
+    
+    for skill in  skill_list{
+        if char_skills.contains(&skill.id){
+            skill_char.push(skill);
+        }
+    }
+    let skill_list_len = skill_char.len()-1;
+    let items: Vec<_> = skill_char
+        .iter()
+        .map(|skill| {
+            ListItem::new(Spans::from(vec![Span::styled(
+                skill.name.clone(),
+                Style::default(),
+            )]))
+        })
+        .collect();
+    //Checks index boundary, sets zero if out of bounds.
+    if list_state.selected().unwrap() > skill_list_len {
+        list_state.select(Some(0));
+    }
+    let selected_skill = skill_char
+        .get(
+            list_state
+                .selected()
+                .expect("there is always a selected skill"),
+        )
+        .expect("exists")
+        .clone();
+
+    let list = List::new(items).block(skills).highlight_style(
         Style::default()
             .bg(Color::Yellow)
             .fg(Color::Black)
