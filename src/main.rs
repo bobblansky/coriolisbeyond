@@ -196,8 +196,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut show_skill_popup = false;
     let mut select_skill_list = false;
+<<<<<<< HEAD
     let mut stdout = io::stdout();
     execute!(stdout, EnterAlternateScreen)?;
+=======
+    let stdout = io::stdout();
+>>>>>>> ac4334968665310fb90e0d9afc14200c70b24708
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
     terminal.clear()?;
@@ -207,11 +211,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut list_state = ListState::default();
     let mut list_state_skills = ListState::default();
     list_state.select(Some(0));
+<<<<<<< HEAD
     let mut skillcounter = 0;
     let mut charcounter = 0;
     let mut itemcounter = 0;
     let mut homecounter = 0;
     let mut current_menu: MenuItem = MenuItem::Home;
+=======
+>>>>>>> ac4334968665310fb90e0d9afc14200c70b24708
     list_state_skills.select(Some(0));
 
     loop {
@@ -325,6 +332,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     //get the character and render
                     //left => name
                     //right list character info from json
+<<<<<<< HEAD
                     let (left, right, grundegenskaper, fardigheter, char_skills_ids, weapon_ids, gear_ids, armor_ids) = render_character(&mut list_state);
                     let (left1, right2) = render_char_skills(&mut list_state_skills, &char_skills_ids); // char_skills
                     let weapons = render_character_weapons(weapon_ids);
@@ -349,6 +357,33 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     rect.render_widget(weapons, inside_chunks[3])
                     }
 
+=======
+                    let (left, right, grundegenskaper, fardigheter, char_skills_ids) = render_character(&mut list_state);
+                    let (left1, right2) = render_char_skills(&mut list_state_skills, &char_skills_ids); // char_skills
+
+                    rect.render_widget(Paragraph::new("Utrustning").block(
+                        Block::default()
+                            .borders(Borders::ALL)
+                            .style(Style::default().fg(Color::White))
+                            .title("Utrustning")
+                            .border_type(BorderType::Plain),
+                    ), inside_chunks[2]);
+                    if select_skill_list{
+                        rect.render_widget(left, character_chunks[0]);
+                        rect.render_stateful_widget(left1, inside_chunks[1], &mut list_state_skills);
+                    }
+                    else{
+                        rect.render_stateful_widget(left, character_chunks[0], &mut list_state);
+                        rect.render_widget(left1, inside_chunks[1]);
+                    }
+
+                    rect.render_widget(right, character_chunk[0]);
+                    rect.render_widget(grundegenskaper, character_chunk[1]);
+                    rect.render_widget(fardigheter, character_chunk[2]);
+                    if show_skill_popup{
+                        render_popup(rect, &mut list_state_skills, char_skills_ids);
+                    }
+>>>>>>> ac4334968665310fb90e0d9afc14200c70b24708
                 },
                 //debug
                 MenuItem::Skills => {
@@ -427,6 +462,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 } else {
                                     list_state.select(Some(selected + 1));
                                 }
+<<<<<<< HEAD
                             }
                         }
                     }
@@ -437,6 +473,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 list_state.select(Some(0));
                             } else {
                                 list_state.select(Some(selected + 1));
+=======
+>>>>>>> ac4334968665310fb90e0d9afc14200c70b24708
                             }
                         }
                     }
@@ -471,6 +509,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 } else {
                                     list_state.select(Some(amount_characters - 1));
                                 }
+<<<<<<< HEAD
                             }
                         }
                     }
@@ -496,8 +535,25 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 list_state.select(Some(0));
                             } else {
                                 list_state.select(Some(selected - 1));
+=======
+>>>>>>> ac4334968665310fb90e0d9afc14200c70b24708
                             }
                         }
+                    }
+                }
+                KeyCode::Right => {
+                    if active_menu_item == MenuItem::Character {
+                        select_skill_list = true;
+                    }
+                }
+                KeyCode::Left => {
+                    if active_menu_item == MenuItem::Character {
+                        select_skill_list = false;
+                    }
+                }
+                KeyCode::Enter => {
+                    if active_menu_item == MenuItem::Character {
+                        show_skill_popup = !show_skill_popup;
                     }
                 }
                 _ => {}
@@ -513,6 +569,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 fn render_popup<B: Backend>(rect: &mut Frame<B>, list_state: &ListState, char_skills: Vec<usize>){
     let skills = read_skill_db().expect("can fetch skill list");
+<<<<<<< HEAD
+=======
+
+>>>>>>> ac4334968665310fb90e0d9afc14200c70b24708
     let mut skill_char: Vec<_> = Vec::new();
     for skill in skills{
         if char_skills.contains(&skill.id){
@@ -566,7 +626,11 @@ fn centered_rect(percent_x: u16, percent_y: u16, r: Rect) -> Rect {
         .split(popup_layout[1])[1]
 }
 
+<<<<<<< HEAD
 fn render_home<'a>() -> (Paragraph<'a>, Paragraph<'a>) {
+=======
+fn render_home<'a>() -> Paragraph<'a> {
+>>>>>>> ac4334968665310fb90e0d9afc14200c70b24708
     let home = Paragraph::new(vec![
         Spans::from(vec![Span::raw("")]),
         Spans::from(vec![Span::raw("Välkommen till")]),
@@ -901,6 +965,58 @@ fn render_char_skills<'a>(list_state: &mut ListState, char_skills: &Vec<usize>) 
     if list_state.selected().unwrap() > skill_list_len {
         list_state.select(Some(0));
     }
+    let selected_skill = skill_char
+        .get(
+            list_state
+                .selected()
+                .expect("there is always a selected skill"),
+        )
+        .expect("exists")
+        .clone();
+
+    let list = List::new(items).block(skills).highlight_style(
+        Style::default()
+            .bg(Color::Yellow)
+            .fg(Color::Black)
+            .add_modifier(Modifier::BOLD),
+    );
+
+    let skill_detail = Paragraph::new(selected_skill.description)
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .style(Style::default().fg(Color::White))
+                .title(selected_skill.name)
+                .border_type(BorderType::Plain),
+        );
+
+    (list, skill_detail)
+}
+
+fn render_char_skills<'a>(list_state: &ListState, char_skills: &Vec<usize>) -> (List<'a>, Paragraph<'a>) {
+    let skills = Block::default()
+    .borders(Borders::ALL)
+    .style(Style::default().fg(Color::White))
+    .title("Talanger")
+    .border_type(BorderType::Plain);
+
+    let skill_list = read_skill_db().expect("can fetch skill list");
+    let mut skill_char: Vec<_> = Vec::new();
+    for skill in skill_list{
+        if char_skills.contains(&skill.id){
+            skill_char.push(skill);
+        }
+    }
+    let items: Vec<_> = skill_char
+        .iter()
+        .map(|skill| {
+            ListItem::new(Spans::from(vec![Span::styled(
+                skill.name.clone(),
+                Style::default(),
+            )]))
+        })
+        .collect();
+
     let selected_skill = skill_char
         .get(
             list_state
