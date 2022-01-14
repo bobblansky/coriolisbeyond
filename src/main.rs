@@ -343,10 +343,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     rect.render_widget(grundegenskaper, character_chunk[1]);
                     rect.render_widget(fardigheter, character_chunk[2]);
                     rect.render_widget(armor, inside_chunks[2]);
+                    rect.render_widget(weapons, inside_chunks[3]);
                     if show_skill_popup{
-                        render_popup(rect, &mut list_state_skills, char_skills_ids);
+                        render_popup(rect, &mut list_state_skills, char_skills_ids)
                     }
-                    rect.render_widget(weapons, inside_chunks[3])
                     }
 
                 },
@@ -550,7 +550,7 @@ fn render_popup<B: Backend>(rect: &mut Frame<B>, list_state: &ListState, char_sk
     let block = Block::default().title(span).borders(Borders::ALL);
     let pop_up = Paragraph::new(selected_skill.description).block(block);
 
-    let area = centered_rect(60, 20, size);
+    let area = centered_rect(64, 36, size);
     rect.render_widget(Clear, area);
     rect.render_widget(pop_up, area);
 }
