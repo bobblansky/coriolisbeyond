@@ -16,7 +16,7 @@ use tui::{
     style::{Color, Modifier, Style},
     text::{Span, Spans},
     widgets::{
-        Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table, Tabs, Clear
+        Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table, Tabs, Wrap, Clear
     },
     Terminal, Frame,
 };
@@ -327,12 +327,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     //right list character info from json
                     let (left, right, grundegenskaper, fardigheter, char_skills_ids, weapon_ids, gear_ids, armor_ids) = render_character(&mut list_state);
                     let (left1, right2) = render_char_skills(&mut list_state_skills, &char_skills_ids); // char_skills
-                    //let char_skills = render_character_skills(char_skills_ids);
                     let weapons = render_character_weapons(weapon_ids);
-                    let items = render_character_items(gear_ids);
                     let armor = render_character_armor(armor_ids);
+                    let items = render_character_items(gear_ids);
                     rect.render_widget(items, talent_gear_chunk[1]);
-
                     if select_skill_list{
                         rect.render_widget(left, character_chunks[0]);
                         rect.render_stateful_widget(left1, talent_gear_chunk[0], &mut list_state_skills);
@@ -414,7 +412,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         if select_skill_list {
                             if let Some(selected) = list_state_skills.selected() {
                                 let amount_characters = read_character_db().expect("can fetch list").len();
-                                if selected >= amount_characters - 1 {
+                                if selected >0 {
                                     list_state_skills.select(Some(0));
                                 } else {
                                     list_state_skills.select(Some(selected + 1));
@@ -458,7 +456,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         if select_skill_list {
                             if let Some(selected) = list_state_skills.selected() {
                                 let amount_skills = read_character_db().expect("can fetch list").len();
-                                if selected >= amount_skills - 1 {
+                                if selected >0 {
                                     list_state_skills.select(Some(selected - 1));
                                 } else {
                                     list_state_skills.select(Some(amount_skills - 1));
@@ -535,7 +533,6 @@ fn render_popup<B: Backend>(rect: &mut Frame<B>, list_state: &ListState, char_sk
     let style = Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD);
     let span = Span::styled(selected_skill.name, style);
     let block = Block::default().title(span).borders(Borders::ALL);
-
     let pop_up = Paragraph::new(selected_skill.description).block(block);
 
     let area = centered_rect(60, 20, size);
