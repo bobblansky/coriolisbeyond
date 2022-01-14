@@ -1,0 +1,18 @@
+[
+    {
+        "id": 1,
+        "name": "Lätt rustning",
+        "rating": 4,
+        "addons": "No Addons",
+        "tech": "O",
+        "comment": "-"
+    },
+    {
+        "id": 2,
+        "name": "Tung Rustning",
+        "rating": 6,
+        "addons": "No Addons", 
+        "tech": "O",
+        "comment": "-"
+    }
+]
