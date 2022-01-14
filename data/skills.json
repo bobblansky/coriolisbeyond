@@ -2,7 +2,7 @@
     {
         "id": 1,
         "name": "Bödel",
-        "description": " Du vet var du ska slå för att fienden ska falla och inte resa sig. Någonsin mer.\n När du åsamkar en fiende en kritisk skada får du - om du vill - vända på tärningarna så att ental blir tiotal och tvärtom.\n Om ditt offer har talangen Nio liv tar effekterna ut varandra, och den kritiska skadan slås fram normalt.",
+        "description": " Du vet var du ska slå för att fienden ska falla och inte resa sig. Någonsin mer. När du åsamkar en fiende en kritisk skada får du - om du vill - vända på tärningarna så att ental blir tiotal och tvärtom. Om ditt offer har talangen Nio liv tar effekterna ut varandra, och den kritiska skadan slås fram normalt.",
         "category": "Allmänna talanger"
     },
     {
@@ -20,7 +20,7 @@
     {
         "id" : 4,
         "name": "Fraktionsrykte",
-        "description": " Du tillhör en fraktion eller ett gäng och kan använda dess rykte för att få +2 på manipulera när du ska skrämma eller hota någon - \n förutsatt att den du hotar känner till fraktionen och att fraktionen har makt och inflytande på platsen där ni befinner er.",
+        "description": " Du tillhör en fraktion eller ett gäng och kan använda dess rykte för att få +2 på manipulera när du ska skrämma eller hota någon - förutsatt att den du hotar känner till fraktionen och att fraktionen har makt och inflytande på platsen där ni befinner er.",
         "category": "Allmänna talanger"
     },
     {
@@ -44,19 +44,19 @@
     {
         "id" : 8,
         "name": "Hotfull",
-        "description": " Du kan slå för kraftprov istället för manipulera när du hotar någon för att få din vilja fram.\n Om du når Knapp framgång måste du inte acceptera en motprestation - istället kan motparten vägra att lyda dig, men måste då angripa dig direkt.",
+        "description": " Du kan slå för kraftprov istället för manipulera när du hotar någon för att få din vilja fram. Om du når Knapp framgång måste du inte acceptera en motprestation - istället kan motparten vägra att lyda dig, men måste då angripa dig direkt.",
         "category": "Allmänna talanger"
     },
     {
         "id" : 9,
         "name": "Människokännare",
-        "description": " Du kan se om någon ljuger eller talar sanning utan att lyckas med manipulera. Handlingen tar någon minut och du kan inte avgöra några detaljer, endast om personen talar sanning eller ljuger.\n Både lögn och halvsanning tolkas som lögn. Varje användning av talangen ger SL 1 mörkerpoäng.",
+        "description": " Du kan se om någon ljuger eller talar sanning utan att lyckas med manipulera. Handlingen tar någon minut och du kan inte avgöra några detaljer, endast om personen talar sanning eller ljuger. Både lögn och halvsanning tolkas som lögn. Varje användning av talangen ger SL 1 mörkerpoäng.",
         "category": "Allmänna talanger"
     },
     {
         "id": 10,
         "name": "Licensierad",
-        "description": " Du har en licens som ger dig tillgång till begränsad utrustning och vapen, se kapitel 6, Utrustning & vapen.\n Du kan inhandla den typen av utrustning om du har birr och det finns på den plats där du befinner dig.\n Att vara licensierad är inte detsamma som att få bära alla typer av vapen öppet på alla platser.\n Lokala lagar kan hindra dig från att bära vapen som du har rätt att inhandla.",
+        "description": " Du har en licens som ger dig tillgång till begränsad utrustning och vapen, se kapitel 6, Utrustning & vapen. Du kan inhandla den typen av utrustning om du har birr och det finns på den plats där du befinner dig. Att vara licensierad är inte detsamma som att få bära alla typer av vapen öppet på alla platser. Lokala lagar kan hindra dig från att bära vapen som du har rätt att inhandla.",
         "category": "Allmänna talanger"
     },
     {

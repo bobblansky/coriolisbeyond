@@ -548,7 +548,7 @@ fn render_popup<B: Backend>(rect: &mut Frame<B>, list_state: &ListState, char_sk
     let style = Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD);
     let span = Span::styled(selected_skill.name, style);
     let block = Block::default().title(span).borders(Borders::ALL);
-    let pop_up = Paragraph::new(selected_skill.description).block(block);
+    let pop_up = Paragraph::new(selected_skill.description).wrap(Wrap{trim:true}).block(block);
 
     let area = centered_rect(64, 36, size);
     rect.render_widget(Clear, area);
@@ -877,6 +877,7 @@ fn render_skills<'a>(list_state: &mut ListState) -> (List<'a>, Paragraph<'a>) {
     );
 
     let skill_detail = Paragraph::new(selected_skill.description)
+        .wrap(Wrap{trim:true})
         .block(
             Block::default()
                 .borders(Borders::ALL)
