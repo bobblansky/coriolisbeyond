@@ -18,7 +18,7 @@ use tui::{
     style::{Color, Modifier, Style},
     text::{Span, Spans},
     widgets::{
-        Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table, Tabs, Wrap
+        Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table, Tabs, Wrap, Clear
     },
     Terminal, Frame,
 };
@@ -235,7 +235,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     //left => name
                     //right list character info from json
                     let (left, right, grundegenskaper, fardigheter, char_skills_ids) = render_character(&mut list_state);
-                    let (left1, right2) = render_char_skills(&mut list_state_skills, char_skills_ids); // char_skills
+                    let (left1, right2) = render_char_skills(&mut list_state_skills, &char_skills_ids); // char_skills
 
                     rect.render_widget(Paragraph::new("Utrustning").block(
                         Block::default()
@@ -257,7 +257,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     rect.render_widget(grundegenskaper, character_chunk[1]);
                     rect.render_widget(fardigheter, character_chunk[2]);
                     if show_skill_popup{
-                        render_popup(rect, &mut list_state_skills);
+                        render_popup(rect, &mut list_state_skills, char_skills_ids);
                     }
                 },
                 MenuItem::Skills => {
@@ -310,7 +310,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         if select_skill_list {
                             if let Some(selected) = list_state_skills.selected() {
                                 let amount_characters = read_character_db().expect("can fetch list").len();
-                                if selected >= amount_characters - 1 {
+                                if selected >0 {
                                     list_state_skills.select(Some(0));
                                 } else {
                                     list_state_skills.select(Some(selected + 1));
@@ -344,7 +344,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         if select_skill_list {
                             if let Some(selected) = list_state_skills.selected() {
                                 let amount_skills = read_character_db().expect("can fetch list").len();
-                                if selected >= amount_skills - 1 {
+                                if selected >0 {
                                     list_state_skills.select(Some(selected - 1));
                                 } else {
                                     list_state_skills.select(Some(amount_skills - 1));
@@ -387,9 +387,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn render_popup<B: Backend>(rect: &mut Frame<B>, list_state: &ListState){
+fn render_popup<B: Backend>(rect: &mut Frame<B>, list_state: &ListState, char_skills: Vec<usize>){
     let skills = read_skill_db().expect("can fetch skill list");
-    let selected_skill = skills
+
+    let mut skill_char: Vec<_> = Vec::new();
+    for skill in skills{
+        if char_skills.contains(&skill.id){
+            skill_char.push(skill);
+        }
+    }
+
+    let selected_skill = skill_char
     .get(
         list_state
             .selected()
@@ -399,11 +407,13 @@ fn render_popup<B: Backend>(rect: &mut Frame<B>, list_state: &ListState){
     .clone();
 
     let size = rect.size();
-    let block = Block::default().title(selected_skill.name).borders(Borders::ALL);
-
+    let style = Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD);
+    let span = Span::styled(selected_skill.name, style);
+    let block = Block::default().title(span).borders(Borders::ALL);
     let pop_up = Paragraph::new(selected_skill.description).block(block);
 
     let area = centered_rect(60, 20, size);
+    rect.render_widget(Clear, area);
     rect.render_widget(pop_up, area);
 }
 
@@ -694,7 +704,7 @@ fn render_skills<'a>(list_state: &ListState) -> (List<'a>, Paragraph<'a>) {
     (list, skill_detail)
 }
 
-fn render_char_skills<'a>(list_state: &ListState, char_skills: Vec<usize>) -> (List<'a>, Paragraph<'a>) {
+fn render_char_skills<'a>(list_state: &ListState, char_skills: &Vec<usize>) -> (List<'a>, Paragraph<'a>) {
     let skills = Block::default()
     .borders(Borders::ALL)
     .style(Style::default().fg(Color::White))
