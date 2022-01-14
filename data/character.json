@@ -8,6 +8,7 @@
         "background" : "Förstkommen",
         "skill_ids": [4, 10],
         "weapon_ids": [1, 11],
+        "armor_ids": [],
         "gear_ids": [1,2],
         "appearance": {
             "face": "Blå/gröna ögon. Tunnt, vitt/grått hår. Ärrbildning på högra sidan av halsen och upp mot bakre delen av huvudet(brännskada).",
@@ -51,6 +52,7 @@
         "background" : "Förstkommen",
         "skill_ids": [4],
         "weapon_ids": [1, 11],
+        "armor_ids": [1],
         "gear_ids": [1],
         "appearance": {
             "face": "Blå/gröna ögon. Tunnt, vitt/grått hår. Ärrbildning på högra sidan av halsen och upp mot bakre delen av huvudet(brännskada).",

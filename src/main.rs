@@ -23,17 +23,18 @@ use tui::{
 
 mod banner;
 use banner::BANNER;
-const SKILL_DB_PATH: &str = "./data/skills.json";
-const CHARACTER_DB_PATH: &str = "./data/character.json";
-const WEAPON_DB_PATH: &str = "./data/weapons.json";
-const ITEM_DB_PATH: &str = "./data/items.json";
+const  SKILL_DB: &str = "./data/skills.json";
+const CHARACTER_DB: &str = "./data/character.json";
+const WEAPON_DB: &str = "./data/weapons.json";
+const ITEM_DB: &str = "./data/items.json";
+const ARMOR_DB: &str = "./data/armor.json";
 
 #[cfg(test)]
 #[test]
 fn test_path() {
     use std::path::Path;
-    const NUMPATHS: usize = 4;
-    let paths: [&str;NUMPATHS] = [SKILL_DB_PATH, CHARACTER_DB_PATH, WEAPON_DB_PATH, ITEM_DB_PATH];
+    const NUMPATHS: usize = 5;
+    let paths: [&str;NUMPATHS] = [SKILL_DB, CHARACTER_DB, WEAPON_DB, ITEM_DB, ARMOR_DB];
     paths.map(|p| assert_eq!(Path::new(p).exists(), true));
 }
 
@@ -63,6 +64,15 @@ struct Appearance {
     clothing: String,
 }
 
+#[derive(Serialize, Deserialize, Clone)]
+struct Armor {
+    id: usize,
+    name: String,
+    rating: u8,
+    addons: String,
+    tech: String,
+    comment: String,
+}
 
 #[derive(Serialize, Deserialize, Clone)]
 struct Weapon {
@@ -89,7 +99,6 @@ struct Kvalificerade {
     vetenskap: u8,
 }
 
-
 #[derive(Serialize, Deserialize, Clone)]
 struct Allmanna {
     kraftprov: u8,
@@ -107,7 +116,6 @@ struct Fardigheter {
     allmanna: Allmanna,
     kvalificerade: Kvalificerade,
 }
-
 
 #[derive(Serialize, Deserialize, Clone)]
 struct Grundegenskaper {
@@ -127,6 +135,7 @@ struct Character {
     background: String,
     skill_ids: Vec<usize>,
     weapon_ids: Vec<usize>,
+    armor_ids: Vec<usize>,
     gear_ids: Vec<usize>,
     appearance: Appearance,
     grundegenskaper: Grundegenskaper,
@@ -296,24 +305,33 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     let character_chunk = Layout::default()
                         .direction(Direction::Horizontal)
                         .constraints([
-                            Constraint::Percentage(40),
+                            Constraint::Percentage(50),
                             Constraint::Percentage(15), 
-                            Constraint::Percentage(45)].as_ref(),
+                            Constraint::Percentage(35)].as_ref(),
                         )
                         .split(inside_chunks[0]);
+                    let talent_gear_chunk = Layout::default()
+                        .direction(Direction::Horizontal)
+                        .constraints([
+                            Constraint::Percentage(50),
+                            Constraint::Percentage(50)].as_ref(),
+                    )
+                    .split(inside_chunks[1]);
                     //get the character and render
                     //left => name
                     //right list character info from json
-                    let (left, right, grundegenskaper, fardigheter, char_skills_ids, weapon_ids, gear_ids) = render_character(&mut list_state);
+                    let (left, right, grundegenskaper, fardigheter, char_skills_ids, weapon_ids, gear_ids, armor_ids) = render_character(&mut list_state);
                     let char_skills = render_character_skills(char_skills_ids);
-                    let weapons = render_weapons(weapon_ids);
+                    let weapons = render_character_weapons(weapon_ids);
                     let items = render_character_items(gear_ids);
-                    rect.render_widget(items, inside_chunks[2]);
+                    let armor = render_character_armor(armor_ids);
+                    rect.render_widget(items, talent_gear_chunk[1]);
                     rect.render_stateful_widget(left, character_chunks[0], &mut list_state);
-                    rect.render_widget(char_skills, inside_chunks[1]);
+                    rect.render_widget(char_skills, talent_gear_chunk[0]);
                     rect.render_widget(right, character_chunk[0]);
                     rect.render_widget(grundegenskaper, character_chunk[1]);
                     rect.render_widget(fardigheter, character_chunk[2]);
+                    rect.render_widget(armor, inside_chunks[2]);
                     rect.render_widget(weapons, inside_chunks[3])
                     }
 
@@ -458,7 +476,7 @@ fn render_home<'a>() -> (Paragraph<'a>, Paragraph<'a>) {
     (banner_para, home)
 }
 
-fn render_character<'a>(list_state: &mut ListState) -> (List<'a>, Table<'a>, Table<'a>, Table<'a>, Vec<usize>, Vec<usize>, Vec<usize>) {
+fn render_character<'a>(list_state: &mut ListState) -> (List<'a>, Table<'a>, Table<'a>, Table<'a>, Vec<usize>, Vec<usize>, Vec<usize>, Vec<usize>) {
     let character = Block::default()
         .borders(Borders::ALL)
         .style(Style::default().fg(Color::White))
@@ -692,6 +710,7 @@ fn render_character<'a>(list_state: &mut ListState) -> (List<'a>, Table<'a>, Tab
     selected_character.skill_ids, 
     selected_character.weapon_ids,
     selected_character.gear_ids,
+    selected_character.armor_ids,
     )
 }
 
@@ -848,9 +867,8 @@ fn render_items<'a>(list_state: &mut ListState) -> (List<'a>, Paragraph<'a>) {
     (list, item_detail)
 }
 
-
-fn render_weapons<'a>(char_weapons: Vec<usize>) -> Table<'a> {
-    let weapon_list = read_weapon_db().expect("can fetch skill list");
+fn render_character_weapons<'a>(char_weapons: Vec<usize>) -> Table<'a> {
+    let weapon_list = read_weapon_db().expect("can fetch weapon list");
 
     let mut rows: Vec<Row> = Vec::new();
 
@@ -897,29 +915,73 @@ fn render_weapons<'a>(char_weapons: Vec<usize>) -> Table<'a> {
     char_weapon_table
 }
 
+fn render_character_armor<'a>(char_armor: Vec<usize>) -> Table<'a> {
+    let armor_list = read_armor_db().expect("can fetch armor list");
 
+    let mut rows: Vec<Row> = Vec::new();
+
+    for armor in armor_list {
+        if char_armor.contains(&armor.id) {
+            rows.push(
+                Row::new(vec![
+                    Cell::from(Span::raw(armor.name)),
+                    Cell::from(Span::raw(armor.rating.to_string())),
+                    Cell::from(Span::raw(armor.comment)),
+                ])
+            );
+        }
+    }
+    let normal_style = Style::default().bg(Color::DarkGray);
+    let header_cells = ["Rustning", "Skydd", "Övrigt"]
+        .iter()
+        .map(|h| Cell::from(*h).style(Style::default().fg(Color::White)));
+    let header = Row::new(header_cells)
+        .style(normal_style);
+    let char_armor_table = Table::new(rows)
+        .header(header)
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .style(Style::default().fg(Color::White))
+                        .title("Rustning")
+                        .border_type(BorderType::Plain),
+        )
+        .widths(&[
+            Constraint::Min(20),
+            Constraint::Percentage(10),
+            Constraint::Percentage(50),
+            ]);
+
+    char_armor_table
+}
 
 fn read_skill_db() -> Result<Vec<Skill>, Error > {
-    let db_content = fs::read_to_string(SKILL_DB_PATH)?;
+    let db_content = fs::read_to_string(SKILL_DB)?;
     let parsed: Vec<Skill> = serde_json::from_str(&db_content)?;
     Ok(parsed)
 }
 
 fn read_character_db() -> Result<Vec<Character>, Error > {
-    let db_content = fs::read_to_string(CHARACTER_DB_PATH)?;
+    let db_content = fs::read_to_string(CHARACTER_DB)?;
     let parsed: Vec<Character> = serde_json::from_str(&db_content)?;
     Ok(parsed)
 }
 
 fn read_weapon_db() -> Result<Vec<Weapon>, Error > {
-    let db_content = fs::read_to_string(WEAPON_DB_PATH)?;
+    let db_content = fs::read_to_string(WEAPON_DB)?;
     let parsed: Vec<Weapon> = serde_json::from_str(&db_content)?;
     Ok(parsed)
 }
 
 fn read_item_db() -> Result<Vec<Item>, Error > {
-    let db_content = fs::read_to_string(ITEM_DB_PATH)?;
+    let db_content = fs::read_to_string(ITEM_DB)?;
     let parsed: Vec<Item> = serde_json::from_str(&db_content)?;
+    Ok(parsed)
+}
+
+fn read_armor_db() -> Result<Vec<Armor>, Error > {
+    let db_content = fs::read_to_string(ARMOR_DB)?;
+    let parsed: Vec<Armor> = serde_json::from_str(&db_content)?;
     Ok(parsed)
 }
 
