@@ -390,17 +390,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     let home_chunks = Layout::default()
                         .direction(Direction::Vertical)
                         .constraints(
-                            [Constraint::Max(5), Constraint::Percentage(95)].as_ref(),
+                            [Constraint::Max(1), Constraint::Percentage(95)].as_ref(),
                         )
                         .horizontal_margin(10)
                         .vertical_margin(1)
                         .split(chunks[1]);
                     let lore_block = Block::default()
                         .borders(Borders::LEFT | Borders::RIGHT)
-                        .style(Style::default().fg(Color::DarkGray));
+                        .style(Style::default().fg(Color::Cyan));
 
 
-                    let lore_text = Paragraph::new(LORE).style(Style::default().fg(Color::White)).scroll((scroll,1)).block(lore_block);
+                    let lore_text = Paragraph::new(LORE).style(Style::default().add_modifier(Modifier::BOLD).fg(Color::White)).scroll((scroll,1)).block(lore_block);
                     rect.render_widget(lore_text, home_chunks[1]);
                 }
             }
