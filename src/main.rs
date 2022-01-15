@@ -20,8 +20,9 @@ use tui::{
     },
     Terminal, Frame,
 };
-
+mod lore;
 mod banner;
+use lore::LORE;
 use banner::BANNER;
 const  SKILL_DB: &str = "./data/skills.json";
 const CHARACTER_DB: &str = "./data/character.json";
@@ -159,6 +160,7 @@ enum MenuItem {
     Character,
     Skills,
     Items,
+    Lore
 }
 impl From<MenuItem> for usize {
     fn from(input: MenuItem) -> usize {
@@ -166,7 +168,8 @@ impl From<MenuItem> for usize {
             MenuItem::Home => 0,
             MenuItem::Character => 1,
             MenuItem::Skills => 2,
-            MenuItem::Items => 3
+            MenuItem::Items => 3,
+            MenuItem::Lore => 4
         }
     }
 }
@@ -205,7 +208,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut terminal = Terminal::new(backend)?;
     terminal.clear()?;
 
-    let menu_titles = vec!["Hem", "Karaktärer", "Talanger", "Utrustning", "Avsluta"];
+    let menu_titles = vec!["Hem", "Karaktärer", "Talanger", "Utrustning", "Lore", "Avsluta"];
     let mut active_menu_item = MenuItem::Home;
     let mut list_state = ListState::default();
     let mut list_state_skills = ListState::default();
@@ -214,6 +217,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut charcounter = 0;
     let mut itemcounter = 0;
     let mut homecounter = 0;
+    let mut scroll = 1;
     let mut current_menu: MenuItem = MenuItem::Home;
     list_state_skills.select(Some(0));
 
@@ -233,7 +237,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 )
                 .split(size);
             let copyright = Paragraph::new("Coriolis Beyond 2022 - No rights reserved")
-                .style(Style::default().fg(Color::LightCyan))
+                .style(Style::default().fg(Color::DarkGray))
                 .alignment(Alignment::Center)
                 .block(
                     Block::default()
@@ -380,6 +384,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     let (left, right) = render_items(&mut list_state);
                     rect.render_stateful_widget(left, item_chunks[0], &mut list_state);
                     rect.render_widget(right, item_chunks[1]);
+                },
+                MenuItem::Lore => {
+                    homecounter = homecounter + 1;
+                    let home_chunks = Layout::default()
+                        .direction(Direction::Vertical)
+                        .constraints(
+                            [Constraint::Max(5), Constraint::Percentage(95)].as_ref(),
+                        )
+                        .horizontal_margin(10)
+                        .vertical_margin(1)
+                        .split(chunks[1]);
+                    let lore_block = Block::default()
+                        .borders(Borders::LEFT | Borders::RIGHT)
+                        .style(Style::default().fg(Color::DarkGray));
+
+
+                    let lore_text = Paragraph::new(LORE).style(Style::default().fg(Color::White)).scroll((scroll,1)).block(lore_block);
+                    rect.render_widget(lore_text, home_chunks[1]);
                 }
             }
             rect.render_widget(copyright, chunks[2]);
@@ -400,6 +422,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 KeyCode::Char('k') => active_menu_item = MenuItem::Character,
                 KeyCode::Char('t') => active_menu_item = MenuItem::Skills,
                 KeyCode::Char('u') => active_menu_item = MenuItem::Items,
+                KeyCode::Char('l') => active_menu_item = MenuItem::Lore,
                 KeyCode::Down => {
                     if active_menu_item == MenuItem::Skills {
                         if let Some(selected) = list_state.selected() {
@@ -441,6 +464,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                             } else {
                                 list_state.select(Some(selected + 1));
                             }
+                        }
+                    }
+                    if active_menu_item == MenuItem::Lore {
+                        scroll = scroll + 1;
+                        if scroll >= 15 {
+                            scroll = 15;
                         }
                     }
                 }
@@ -485,6 +514,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                     list_state.select(Some(amount_characters - 1));
                                 }
                             }
+                        }
+                    }
+                    if active_menu_item == MenuItem::Lore {
+                        scroll = scroll - 1;
+                        if scroll <= 0 {
+                            scroll = 1;
                         }
                     }
                 }
