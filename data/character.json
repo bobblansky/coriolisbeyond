@@ -6,10 +6,13 @@
         "class": "Agent - Underrättelse Officer",
         "icon": "Gråterskan",
         "background" : "Förstkommen",
+        "upbringing" : "Legofolk",
+        "group_concept": "Bulkfraktare",
         "skill_ids": [4, 10],
         "weapon_ids": [1, 11],
         "armor_ids": [],
         "gear_ids": [1,2],
+        "birr" : 3620,
         "appearance": {
             "face": "Blå/gröna ögon. Tunnt, vitt/grått hår. Ärrbildning på högra sidan av halsen och upp mot bakre delen av huvudet(brännskada).",
             "clothing": "Öppen kaftan"
@@ -50,13 +53,16 @@
         "class": "Dataspindel",
         "icon" : "Nörden",
         "background" : "Förstkommen",
+        "upbringing" : "Noob",
+        "group_concept": "Bulkfraktare",
         "skill_ids": [4],
         "weapon_ids": [1, 11],
         "armor_ids": [1],
         "gear_ids": [1],
+        "birr" : 0,
         "appearance": {
-            "face": "Blå/gröna ögon. Tunnt, vitt/grått hår. Ärrbildning på högra sidan av halsen och upp mot bakre delen av huvudet(brännskada).",
-            "clothing": "Öppen kaftan"
+            "face": "Förvirrad",
+            "clothing": "Vuxenblöja"
         },
         "grundegenskaper":  { 
             "styrka": 2,

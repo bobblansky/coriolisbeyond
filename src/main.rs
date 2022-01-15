@@ -133,10 +133,13 @@ struct Character {
     class: String,
     icon: String,
     background: String,
+    upbringing: String,
+    group_concept: String,
     skill_ids: Vec<usize>,
     weapon_ids: Vec<usize>,
     armor_ids: Vec<usize>,
     gear_ids: Vec<usize>,
+    birr: u32,
     appearance: Appearance,
     grundegenskaper: Grundegenskaper,
     fardigheter: Fardigheter,
@@ -301,7 +304,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         .direction(Direction::Vertical)
                         .constraints([
                             //Max X där X är antal färdigheter + 2 (top/botten -linjer värda 1)
-                            Constraint::Max(19), 
+                            Constraint::Min(19), 
                             Constraint::Percentage(20),
                             Constraint::Percentage(20), 
                             Constraint::Percentage(25)].as_ref(),
@@ -442,10 +445,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     }
                 }
                 KeyCode::Up => {
+                    if active_menu_item == MenuItem::Items {
+                        if let Some(selected) = list_state.selected() {
+                            let amount_items = read_item_db().expect("can fetch list").len();
+                            if selected >= amount_items - 1 {
+                                list_state.select(Some(0));
+                            } else {
+                                list_state.select(Some(selected - 1));
+                            }
+                        }
+                    }
                     if active_menu_item == MenuItem::Skills {
                         if let Some(selected) = list_state.selected() {
                             let amount_skills = read_character_db().expect("can fetch list").len();
-                            if selected > 0 {
+                            if selected >= amount_skills {
                                 list_state.select(Some(selected - 1));
                             } else {
                                 list_state.select(Some(amount_skills - 1));
@@ -805,8 +818,17 @@ fn render_character<'a>(list_state: &mut ListState) -> (List<'a>, Table<'a>, Tab
             Cell::from(Span::raw("Bakgrund: ")),
             Cell::from(Span::raw(selected_character.background))]),
         Row::new(vec![
+            Cell::from(Span::raw("Uppväxt: ")),
+            Cell::from(Span::raw(selected_character.upbringing))]),
+        Row::new(vec![
+            Cell::from(Span::raw("Gruppkoncept: ")),
+            Cell::from(Span::raw(selected_character.group_concept))]),
+        Row::new(vec![
             Cell::from(Span::raw("Ikon: ")),
             Cell::from(Span::raw(selected_character.icon))]),
+        Row::new(vec![
+            Cell::from(Span::raw("Birr: ")),
+            Cell::from(Span::raw(selected_character.birr.to_string()))]),
         Row::new(vec![Cell::from(Span::raw("\n\n"))]),
         Row::new(vec![Cell::from(Span::raw("Utseende\n "))]),
         Row::new(vec![
