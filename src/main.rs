@@ -282,14 +282,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     .constraints(
                         [
                             Constraint::Min(30),
-                            Constraint::Min(10),
+                            Constraint::Ratio(3,1),
                         ]
                         .as_ref(),
                     )
                     .split(chunks[1]);
-                    let (banner_text, home_instructions) = render_home();
+                    let (banner_text, home_text) = render_home();
                     rect.render_widget(banner_text, home_chunks[0]);
-                    rect.render_widget(home_instructions, home_chunks[1]);
+                    rect.render_widget(home_text, home_chunks[1]);
                 },
                 MenuItem::Character => {
                     if refresh_needed {
@@ -386,8 +386,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     rect.render_widget(right, item_chunks[1]);
                 },
                 MenuItem::Lore => {
-                    homecounter = homecounter + 1;
-                    let home_chunks = Layout::default()
+                    let lore_chunks = Layout::default()
                         .direction(Direction::Vertical)
                         .constraints(
                             [Constraint::Max(1), Constraint::Percentage(95)].as_ref(),
@@ -401,7 +400,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 
                     let lore_text = Paragraph::new(LORE).style(Style::default().add_modifier(Modifier::BOLD).fg(Color::White)).scroll((scroll,1)).block(lore_block);
-                    rect.render_widget(lore_text, home_chunks[1]);
+                    rect.render_widget(lore_text, lore_chunks[1]);
                 }
             }
             rect.render_widget(copyright, chunks[2]);
