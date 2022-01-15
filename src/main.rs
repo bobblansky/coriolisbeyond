@@ -132,6 +132,8 @@ struct Character {
     name: String,
     experience: u8,
     class: String,
+    ship_position: String,
+    problem: String,
     icon: String,
     background: String,
     upbringing: String,
@@ -845,6 +847,9 @@ fn render_character<'a>(list_state: &mut ListState) -> (List<'a>, Table<'a>, Tab
             Cell::from(Span::raw("Klass: ")),
             Cell::from(Span::raw(selected_character.class))]),
         Row::new(vec![
+            Cell::from(Span::raw("Position: ")),
+            Cell::from(Span::raw(selected_character.ship_position))]),
+        Row::new(vec![
             Cell::from(Span::raw("Bakgrund: ")),
             Cell::from(Span::raw(selected_character.background))]),
         Row::new(vec![
@@ -856,6 +861,9 @@ fn render_character<'a>(list_state: &mut ListState) -> (List<'a>, Table<'a>, Tab
         Row::new(vec![
             Cell::from(Span::raw("Ikon: ")),
             Cell::from(Span::raw(selected_character.icon))]),
+        Row::new(vec![
+            Cell::from(Span::raw("Problem: ")),
+            Cell::from(Span::raw(selected_character.problem))]),
         Row::new(vec![
             Cell::from(Span::raw("Birr: ")),
             Cell::from(Span::raw(selected_character.birr.to_string()))]),

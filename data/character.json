@@ -4,18 +4,20 @@
         "name": "Dhakir Kruth",
         "experience": 3,
         "class": "Agent - Underrättelse Officer",
+        "ship_position": "Kapten",
+        "problem": "Paranoid",
         "icon": "Gråterskan",
         "background" : "Förstkommen",
         "upbringing" : "Legofolk",
         "group_concept": "Bulkfraktare",
-        "skill_ids": [4, 10],
-        "weapon_ids": [1, 11],
+        "skill_ids": [3, 30, 36],
+        "weapon_ids": [1],
         "armor_ids": [],
         "gear_ids": [1,2],
         "birr" : 3620,
         "appearance": {
-            "face": "Blå/gröna ögon. Tunnt, vitt/grått hår. Ärrbildning på högra sidan av halsen och upp mot bakre delen av huvudet(brännskada).",
-            "clothing": "Öppen kaftan"
+            "face": "Blå/gröna ögon. Tunnt, vitt/grått hår.",
+            "clothing": "Öppen kaftan(Svart)"
         },
         "grundegenskaper":  { 
             "styrka": 2,
@@ -51,6 +53,8 @@
         "name": "Dakota",
         "experience": 3,
         "class": "Dataspindel",
+        "ship_position": "Signalist",
+        "problem": "-",
         "icon" : "Nörden",
         "background" : "Förstkommen",
         "upbringing" : "Noob",
