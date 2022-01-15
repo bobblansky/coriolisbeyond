@@ -1,69 +1,344 @@
 [
     {
+        "id": 0,
+        "name": "Grupptalanger",
+        "description" : "Er grupp får välja en talang kopplad till ert gruppkoncept. Alla i gruppen kan använda talangen. Grupptalangen kan användas individuellt av varje enskild RP om det inte uttryckligen står att något annat gäller.",
+        "category": "Grupptalanger"
+    },
+    {
         "id": 1,
+        "name": "Näsa för Birr",
+        "description": "Vid handel får ni +2 på manipulera. Kan bara användas en gång per spelmöte (för helagruppen).",
+        "category": "Grupptalanger"
+    },
+    {
+        "id": 2,
+        "name": "Snabbaste rutten",
+        "description": "Ni hittar den snabbaste rutten. Resor tar halva tiden (sid 164), eller så kan ett möte på resan undvikas. SL får 1 mörkerpoäng när talangen används. Kan endast användas en gång per resa.",
+        "category": "Grupptalanger"
+    },
+    {
+        "id": 3,
+        "name": "Vår mutkolv",
+        "description": "Ni har en känsla för att hitta de mest korrupta tjänstemännen, tullarna och officerarna och haralltid +2 på manipulera vid försök att muta någon.",
+        "category": "Grupptalanger"
+    },
+    {
+        "id": 4,
+        "name": "Eldstorm",
+        "description": "Ni får +2 på skjutvapen, men bara när alla i gruppen angriper samma mål under samma runda.",
+        "category": "Grupptalanger"
+    },
+    {
+        "id": 5,
+        "name": "Sparnarförband",
+        "description": "Ni har koll på allt som händer runt er och får alltid +2 på att upptäcka ett bakhåll med spaning.",
+        "category": "Grupptalanger"
+    },
+    {
+        "id": 6,
+        "name": "Storma",
+        "description": "Ni får +2 på närkamp men bara om alla i gruppen under samma runda lägger minst en snabb handling på förflyttning. Bonusen gäller bara en runda.",
+        "category": "Grupptalanger"
+    },
+    {
+        "id": 7,
+        "name": "Ahlams dansare",
+        "description": "Ni kan använda rörlighet istället för manipulera för att göra ett gott intryck.",
+        "category": "Grupptalanger"
+    },
+    {
+        "id": 8,
+        "name": "Brett kontaktnät",
+        "description": "Ni kan hitta en användbar kontakt på en ny plats. Kontakten kan hjälpa er med beskydd, låna ut extra utrustning eller gå i god för er till makthavare på platsen. SL får 1 mörkerpoäng när ni använder talangen. Kan bara användas en gång per spelmöte (för hela gruppen).",
+        "category": "Grupptalanger"
+    },
+    {
+        "id": 9,
+        "name": "Lönnmördarskrå",
+        "description": "Ni kan använda smyga istället för närkamp för att utföra ett närstridsanfall mot motståndare som inte har upptäckt er.",
+        "category": "Grupptalanger"
+    },
+    {
+        "id": 10,
+        "name": "Resvana",
+        "description": "Ni kan använda manipulera istället för horisontens kulturer för att förstå folks seder.",
+        "category": "Grupptalanger"
+    },
+    {
+        "id": 11,
+        "name": "sanningssökare",
+        "description": "Ni kan automatiskt få fram viktig information eller en ledtråd utan att använda färdighetsslag. Informationen ska vara så pass användbar att den gör att ni kan undvika ett hinder eller liknande i ett äventyr. Talangen kan bara användas en gång per spelmöte för hela gruppen (inte en gång per RP). SL får 1 mörkerpoäng när ni använder talangen.",
+        "category": "Grupptalanger"
+    },
+    {
+        "id": 12,
+        "name": "Överlevare",
+        "description": "Ni kan ta er ur en knipa som har med naturens farlighet att göra, må det vara skogsbrand, explosiv dekompression eller andra faror. Hela gruppen tar sig ur knipan. Talangen kan bara användas en gång per spelmöte för hela gruppen (inte en gång per RP). SL får 1 MP varje gång talangen används",
+        "category": "Grupptalanger"
+    },
+    {
+        "id": 13,
+        "name": "En sista Birr",
+        "description": "Ni kan leva av era uppträdanden och arbeten. Slå rörlighet istället för manipulera för att skaffa livets nödvändigheter (mat, dryck, reparationer - men inte ny utrustning) på en ny plats.",
+        "category": "Grupptalanger"
+    },
+    {
+        "id": 14,
+        "name": "Ikonernas bön",
+        "description": "Ni kan bli bönhörda av Ikonerna i en utsatt situation. Detta betyder att ni kan häva effekten av en eller flera MP som SL just använt för att påverka äventyret eller någon i gruppen (se kapitel 3). Talangen kan bara användas en gång per spelmöte för hela gruppen (inte en gång per RP).",
+        "category": "Grupptalanger"
+    },
+    {
+        "id": 15,
+        "name": "Underhållare in i det sista",
+        "description": "Ni kan tillsammans ta er ur en knipa genom att spela på er talang för underhållning. Talangen kan bara användas en gång per spelmöte för hela gruppen (inte en gång per RP). SL får 1 mörkerpoäng när ni använder talangen",
+        "category": "Grupptalanger"
+    },
+    {
+        "id": 16,
+        "name": "Ikontalanger",
+        "description" : "Ikonerna finns överallt, din RP är född i en av Ikonernas segment och är därmed välsignad. Ikontalanger slumpas fram när du skapar din rollperson och kan sedan aldrig läras i spel. Ikontalanger kan bara användas en gång per spelmöte, och SL får 1 mörkerpoäng när du gör det",
+        "category": "Ikontalanger"
+    },
+    {
+        "id": 17,
+        "name": "Budbärarens talang",
+        "description": "Du kan få din vilja fram genom väl valda ord och handlingar, utan att slå för manipulera. Detta gäller en situation mot en SLP eller RP. Din önskan måste var rimlig, en SLP kan exempelvis inte tvingas agera direkt emot sina egna intressen.",
+        "category": "Ikontalanger"
+    },
+    {
+        "id": 18,
+        "name": "Dansarens talang",
+        "description": "Du kan undvika att träffas av en attack och tar då ingen skada. Du kan välja detta efter att attackslaget har lyckats, men innan du slår för skydd eller rustning.",
+        "category": "Ikontalanger"
+    },
+    {
+        "id": 19,
+        "name": "Spelarens talang",
+        "description": "Du har extrem tur och kan välja att lyckas med ett valfritt färdighetsslag med stor framgång. Du måste fortfarande ha minst FV 1 i en kvalificerad färdighet för att kunna använda den.",
+        "category": "Ikontalanger"
+    },
+    {
+        "id": 20,
+        "name": "Skeppgastens talang",
+        "description": "Om ert skepp går ner på noll Struktur- eller Energipoäng kan du genast återställa T6 poäng. Detta kräver ingen aktiv handling av dig, det är Ikonerna som ingriper",
+        "category": "Ikontalanger"
+    },
+    {
+        "id": 21,
+        "name": "Krämarens talang",
+        "description": "Du kan få ett fördelaktigt lån som gör att du kan införskaffa ett värdefullt föremål eller en modul till ett skepp. Lånet måste sedan betalas tillbaka inom överenskommen tid om du vill behålla föremålet.",
+        "category": "Ikontalanger"
+    },
+    {
+        "id": 22,
+        "name": "Domarens talang",
+        "description": "Du gör automatiskt kritisk skada när du träffar med en attack, oberoende av om skadan tar sig igenom skydd eller ej. Övriga effekter av attacken sker som vanligt.",
+        "category": "Ikontalanger"
+    },
+    {
+        "id": 23,
+        "name": "Resenärens talang",
+        "description": "Du frågar SL om ett specifikt val i äventyret. Det måste vara ett val med bara två alternativ. SL måste tala om vilken väg som är mest fördelaktig för dig, om det är möjligt att avgöra.",
+        "category": "Ikontalanger"
+    },
+    {
+        "id": 24,
+        "name": "Gråterskans talang",
+        "description": "Du kan resa dig igen om du blivit utslagen och återfå 1 kroppspoäng (alternativt stresspoäng). Alternativt kan du välja att ignorera en kritisk skada när du får den.",
+        "category": "Ikontalanger"
+    },
+    {
+        "id": 25,
+        "name": "Den Ansiktslöses talang",
+        "description": "Ödet är på din sida och du kan därför förändra en konkret detalj i en scen till din fördel. Det måste vara något som har kosmetisk effekt eller hjälper dig indirekt - du kan exempelvis inte trolla bort en fiende, men du kan bestämma att det ligger en kniv inom räckhåll eller att ett fönster står öppet. SL har sista ordet om vad som är tillåtet",
+        "category": "Ikontalanger"
+    },
+    {
+        "id": 26,
+        "name": "Allmänna talanger",
+        "description" : "Nedan följer alla allmänna talanger. Alla dessa kan du lära dig under spel genom att spendera 5 ERF",
+        "category": "Allmänna talanger"
+    },
+    {
+        "id" : 27,
         "name": "Bödel",
-        "description": " Du vet var du ska slå för att fienden ska falla och inte resa sig. Någonsin mer. När du åsamkar en fiende en kritisk skada får du - om du vill - vända på tärningarna så att ental blir tiotal och tvärtom. Om ditt offer har talangen Nio liv tar effekterna ut varandra, och den kritiska skadan slås fram normalt.",
+        "description": "Du vet var du ska slå för att fienden ska falla och inte resa sig. Någonsin mer. När du åsamkar en fiende en kritisk skada får du - om du vill - vända på tärningarna så att ental blir tiotal och tvärtom. Om ditt offer har talangen Nio liv tar effekterna ut varandra, och den kritiska skadan slås fram normalt",
         "category": "Allmänna talanger"
     },
     {
-        "id" : 2,
+        "id" : 28,
         "name": "Defensiv",
-        "description": " Du är snabb på fötterna och kan enkelt glida undan angrepp i närstrid. Du får modifikation +2 när du använder närkamp för att parera (sid 98)",
+        "description": "Du är snabb på fötterna och kan enkelt glida undan angrepp i närstrid. Du får modifikation +2 när du använder närkamp för att parera (sid 98)",
         "category": "Allmänna talanger"
     },
     {
-        "id" : 3,
+        "id" : 29,
         "name": "Exospecialist",
-        "description": " Du har +2 på rörlighet eller kraftprov för att hantera exon av alla de slag, från skal- och lastexon till rena stridsexon.",
+        "description": "Du har +2 på rörlighet eller kraftprov för att hantera exon av alla de slag, från skal- och lastexon till rena stridsexon.",
         "category": "Allmänna talanger"
     },
     {
-        "id" : 4,
+        "id" : 30,
         "name": "Fraktionsrykte",
-        "description": " Du tillhör en fraktion eller ett gäng och kan använda dess rykte för att få +2 på manipulera när du ska skrämma eller hota någon - förutsatt att den du hotar känner till fraktionen och att fraktionen har makt och inflytande på platsen där ni befinner er.",
+        "description": "Du tillhör en fraktion eller ett gäng och kan använda dess rykte för att få +2 på manipulera när du ska skrämma eller hota någon - förutsatt att den du hotar känner till fraktionen och att fraktionen har makt och inflytande på platsen där ni befinner er.",
         "category": "Allmänna talanger"
     },
     {
-        "id" : 5,
+        "id" : 31,
         "name": "Fältmedikurg",
         "description": " (Kräver Medikurgi) Du kan konsten att stoppa blödningar och behandla svåra skador. Du får +2 på medikurgi när du behandlar någon som är på väg att dö av en kritisk skada. Talangen har ingen effekt på stress.",
         "category": "Allmänna talanger"
     },
     {
-        "id" : 6,
+        "id" : 32,
         "name": "Förförare",
-        "description": " Du har en talang för det romantiska och får +2 på manipulera i situationer då du försöker uppnå något genom att förföra en person.",
+        "description": "Du har en talang för det romantiska och får +2 på manipulera i situationer då du försöker uppnå något genom att förföra en person.",
         "category": "Allmänna talanger"
     },
     {
-        "id" : 7,
+        "id" : 33,
         "name": "Hassassinens dolkstöt",
-        "description": " Du är en vältränad lönnmördare. När du utför en smygattack (sid 96) med ett Litet vapen får du +2 på slaget i närkamp.",
+        "description": "Du är en vältränad lönnmördare. När du utför en smygattack (sid 96) med ett Litet vapen får du +2 på slaget i närkamp.",
         "category": "Allmänna talanger"
     },
     {
-        "id" : 8,
+        "id" : 34,
         "name": "Hotfull",
-        "description": " Du kan slå för kraftprov istället för manipulera när du hotar någon för att få din vilja fram. Om du når Knapp framgång måste du inte acceptera en motprestation - istället kan motparten vägra att lyda dig, men måste då angripa dig direkt.",
+        "description": "Du kan slå för kraftprov istället för manipulera när du hotar någon för att få din vilja fram. Om du når Knapp framgång måste du inte acceptera en motprestation - istället kan motparten vägra att lyda dig, men måste då angripa dig direkt.",
         "category": "Allmänna talanger"
     },
     {
-        "id" : 9,
+        "id" : 35,
         "name": "Människokännare",
-        "description": " Du kan se om någon ljuger eller talar sanning utan att lyckas med manipulera. Handlingen tar någon minut och du kan inte avgöra några detaljer, endast om personen talar sanning eller ljuger. Både lögn och halvsanning tolkas som lögn. Varje användning av talangen ger SL 1 mörkerpoäng.",
+        "description": "Du kan se om någon ljuger eller talar sanning utan att lyckas med manipulera. Handlingen tar någon minut och du kan inte avgöra några detaljer, endast om personen talar sanning eller ljuger. Både lögn och halvsanning tolkas som lögn. Varje användning av talangen ger SL 1 mörkerpoäng.",
         "category": "Allmänna talanger"
     },
     {
-        "id": 10,
+        "id": 36,
         "name": "Licensierad",
-        "description": " Du har en licens som ger dig tillgång till begränsad utrustning och vapen, se kapitel 6, Utrustning & vapen. Du kan inhandla den typen av utrustning om du har birr och det finns på den plats där du befinner dig. Att vara licensierad är inte detsamma som att få bära alla typer av vapen öppet på alla platser. Lokala lagar kan hindra dig från att bära vapen som du har rätt att inhandla.",
+        "description": "Du har en licens som ger dig tillgång till begränsad utrustning och vapen, se kapitel 6, Utrustning & vapen. Du kan inhandla den typen av utrustning om du har birr och det finns på den plats där du befinner dig. Att vara licensierad är inte detsamma som att få bära alla typer av vapen öppet på alla platser. Lokala lagar kan hindra dig från att bära vapen som du har rätt att inhandla.",
         "category": "Allmänna talanger"
     },
     {
-        "id" : 11,
+        "id" : 37,
         "name": "Torped",
-        "description": " När du skjuter mot någon och träffar får du automatiskt en extra sexa att öka effekten med - men bara om du anfaller på nära avstånd.",
+        "description": "När du skjuter mot någon och träffar får du automatiskt en extra sexa att öka effekten med - men bara om du anfaller på nära avstånd.",
         "category": "Allmänna talanger"
+    },
+    {
+        "id": 38,
+        "name": "Nio Liv",
+        "description": "Hur illa det än ser ut tycks du alltid komma undan med blotta förskräckelsen. När du får en kritisk skada kan du vända på tärningarna, så att ental blir tiotal och tvärtom (sid 107). Om din angripare har talangen Bödel tar effekterna ut varandra, och den kritiska skadan slås fram normalt.",
+        "category": "Allmänna talanger"
+    },
+    {
+        "id": 39,
+        "name": "Mejare",
+        "description": "Du är superb på att hålla nere avtryckaren och kan ignorera den första etta du slår när du skjuter automateld (sid 101).",
+        "category": "Allmänna talanger"
+    },
+    {
+        "id": 40,
+        "name": "Ondsint",
+        "description": "När du lyckas manipulera någon och ger offret stress tar hon 1 poäng extra stress.",
+        "category": "Allmänna talanger"
+    },
+    {
+        "id": 41,
+        "name": "Rik familj",
+        "description": "Du kan använda ryktet om din familjs rikedomar till att ge dig +2 i manipulera i situationer där SL finner det relevant. Om ryktet är sant eller inte spelar ingen roll. Du kan bara välja denna talang om du har bakgrunden privilegierad (sid 23).",
+        "category": "Allmänna talanger"
+    },
+    {
+        "id": 42,
+        "name": "Rymdvan",
+        "description": "Ditt balanssinne är anpassat till en tillvaro utan gravitation. Du får alltid +2 på rörlighet för manövrer i viktlöst tillstånd.",
+        "category": "Allmänna talanger"
+    },
+    {
+        "id": 43,
+        "name": "Själavårdare",
+        "description": "(Kräver Medikurgi) Du läser andra som en öppen bok, och har en naturlig fallenhet för att få dem att öppna sina hjärtan för dig. Du får modifikation +2 på medikurgi när du tar hand om någon som har fått ett sammanbrott av stress (sid 102).",
+        "category": "Allmänna talanger"
+    },
+    {
+        "id": 44,
+        "name": "Skrotskalle",
+        "description": "Du kan mecka med det mesta och kan med ett lyckat slag för teknologi laga ett föremål utan tillgång till reservdelar, eller på stående fot skapa ett föremål som kan användas en gång för ett ändamål. Antalet sexor i slaget anger föremålets bonus.",
+        "category": "Allmänna talanger"
+    },
+    {
+        "id": 45,
+        "name": "Snabbladdare",
+        "description": "Du kan ladda om ett vapen med en snabb handling (istället för en normal handling).",
+        "category": "Allmänna talanger"
+    },
+    {
+        "id": 46,
+        "name": "Sprinter",
+        "description": "Din normalförflyttning (sid 95) ökar från 10 till 12 meter. Du kan välja denna talang upp till tre gånger, vilket i så fall ger en maximal normalförflyttning på 16 meter. Denna talang kan kombineras med Snabb men inte med Muskelförstärkt.",
+        "category": "Allmänna talanger"
+    },
+    {
+        "id": 47,
+        "name": "Stridsvana",
+        "description": "Du slår alltid initiativ (sid 92) med två tärningar och väljer det bästa värdet.",
+        "category": "Allmänna talanger"
+    },
+    {
+        "id": 48,
+        "name": "Stryktålig",
+        "description": "Du är extra stryktålig och har därför 2 KP mer än normalt.",
+        "category": "Allmänna talanger"
+    },
+    {
+        "id": 49,
+        "name": "Talismanmakare",
+        "description": "Du har förmågan att skapa talismaner och välsigna dem. Det tar T6 timmar och kräver ett kapell eller altare. En talisman ger sedan +1 i bonus för ett färdighetsslag innan välsignelsen går ur.",
+        "category": "Allmänna talanger"
+    },
+    {
+        "id": 50,
+        "name": "Väderbiten",
+        "description": "Du är van vid att uthärda extremt väder och andra naturkrafter (till exempel kyla, stormar, stark gravitation och eld). Talangen räknas som en “rustning” med skyddsvärde 3 mot denna typ av skada.",
+        "category": "Allmänna talanger"
+    },
+    {
+        "id": 51,
+        "name": "Välsigna",
+        "description": "En gång per spelmöte kan du välsigna en annan rollperson, vilket ger denne +1 på en handling. Den du välsignar måste finnas på nära avstånd, och signelsen är en långsam handling i strid. När du välsignar någon får SL 1 mörkerpoäng.",
+        "category": "Allmänna talanger"
+    },
+    {
+        "id": 52,
+        "name": "Ögon i nacken",
+        "description": "Du har förmågan att känna av bakhåll och kan en gång per spelmöte undvika att bli överraskad. Det ger dig också +2 till spaning vid smygattacker och bakhåll.",
+        "category": "Allmänna talanger"
+    },
+    {
+        "id": 53,
+        "name": "Humanistiska talanger",
+        "description": "Följande tre talanger är unika för humaniter (sid 24). De går inte att skaffa under spel.",
+        "category": "Humanistiska talanger"
+    },
+    {
+        "id": 54,
+        "name": "Biosignalering",
+        "description": "Du har förmågan att sända ut och ta emot biosignaler via förstorade hudkörtlar, lokaliserade på bröstkorg, hals eller ansikte. Dina biosignaler sprids via luften och fungerar inte i vakuum eller mellan personer i skalexon. Med biosignaler kan du få en person att göra det du vill - du får +2 på manipulera. Talangen kan bara användas en gång per spelmöte.",
+        "category": "Humanistiska talanger"
+    },
+    {
+        "id": 55,
+        "name": "Resistent",
+        "description": "Din kropp kan uthärda extremt väder och andra naturkrafter (till exempel kyla, stormar, stark gravitation och eld). Talangen räknas som en “rustning” med skyddsvärde 6 mot denna typ av skada.",
+        "category": "Humanistiska talanger"
+    },
+    {
+        "id": 56,
+        "name": "Vattenandning",
+        "description": "Du andas obehindrat under vatten.",
+        "category": "Humanistiska talanger"
     }
-
 ]

@@ -850,13 +850,22 @@ fn render_skills<'a>(list_state: &mut ListState) -> (List<'a>, Paragraph<'a>) {
         list_state.select(Some(0));
     }
     
+    let mut category  = String::from("");
     let items: Vec<_> = skill_list
         .iter()
         .map(|skill| {
-            ListItem::new(Spans::from(vec![Span::styled(
-                skill.name.clone(),
-                Style::default(),
-            )]))
+            if category != skill.category {
+                category = skill.category.clone();     
+                ListItem::new(Spans::from(vec![
+                    Span::styled(skill.category.clone(),
+                    Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD)
+                )]))
+            } else {
+                ListItem::new(Spans::from(vec![Span::styled(
+                    skill.name.clone(),
+                    Style::default(),
+                )]))
+            }
         })
         .collect();
 
