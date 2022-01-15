@@ -595,18 +595,14 @@ fn centered_rect(percent_x: u16, percent_y: u16, r: Rect) -> Rect {
 }
 
 fn render_home<'a>() -> (Paragraph<'a>, Paragraph<'a>) {
-    let home = Paragraph::new(vec![
-        Spans::from(vec![Span::raw("")]),
-        Spans::from(vec![Span::raw("Välkommen till")]),
-        Spans::from(vec![Span::raw("")]),
-        Spans::from(vec![Span::styled(
-            "Coriolis Beyond",
-            Style::default().fg(Color::LightBlue),
-        )]),
-        Spans::from(vec![Span::raw("")]),
-        Spans::from(vec![Span::raw("Tryck 't' för att se talanger, 'k' för att karaktärer, 'u' för utrustning, 'h' för hemmavyn and 'a' för att avsluta.")]),
-    ])
-    .alignment(Alignment::Center);
+    let home = Paragraph::new("
+        'Med Zenit kom den nya eran – och Horisonten blomstrade återigen. 
+        Tre dussin stjärnsystem, sammanbundna av ödet och Ikonerna, vandrade tillsammans mot en ljusare framtid. 
+        Men med Emissariernas ankomst led den lyckliga tiden mot sitt slut. Och mörkret mellan stjärnorna anades åter.'\n
+        IKONERNAS RIKE – En historisk översikt av Tredje horisonten av Kaldana Mourir")
+        .wrap(Wrap {trim:true})
+        .alignment(Alignment::Center)
+        .style(Style::default().fg(Color::DarkGray).add_modifier(Modifier::ITALIC));
     let banner_para = Paragraph::new(BANNER).alignment(Alignment::Center).style(Style::default().fg(Color::Cyan));
 
     (banner_para, home)
