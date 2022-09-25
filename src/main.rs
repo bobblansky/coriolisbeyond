@@ -335,7 +335,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     //left => name
                     //right list character info from json
                     let (left, right, grundegenskaper, fardigheter, char_skills_ids, weapon_ids, gear_ids, armor_ids) = render_character(&mut list_state);
-                    let (left1, right2) = render_char_skills(&mut list_state_skills, &char_skills_ids); // char_skills
+                    let (left1, _right2) = render_char_skills(&mut list_state_skills, &char_skills_ids); // char_skills
                     let weapons = render_character_weapons(weapon_ids);
                     let armor = render_character_armor(armor_ids);
                     let items = render_character_items(gear_ids);
@@ -438,7 +438,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     if active_menu_item == MenuItem::Character {
                         if select_skill_list {
                             if let Some(selected) = list_state_skills.selected() {
-                                let amount_characters = read_character_db().expect("can fetch list").len();
+                                //TODO: use or remove?
+                                let _amount_characters = read_character_db().expect("can fetch list").len();
                                 if selected >0 {
                                     list_state_skills.select(Some(0));
                                 } else {
@@ -549,22 +550,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         }
                     }
                 }
-                KeyCode::Right => {
-                    if active_menu_item == MenuItem::Character {
-                        select_skill_list = true;
-                    }
-                }
-                KeyCode::Left => {
-                    if active_menu_item == MenuItem::Character {
-                        select_skill_list = false;
-                    }
-                }
-                KeyCode::Enter => {
-                    if active_menu_item == MenuItem::Character {
-                        show_skill_popup = !show_skill_popup;
-                    }
-                }
-                _ => {}
+               _ => {}
             },
             Event::Tick => {}
         }
@@ -1015,6 +1001,7 @@ fn render_char_skills<'a>(list_state: &mut ListState, char_skills: &Vec<usize>) 
     (list, skill_detail)
 }
 
+#[allow(dead_code)]
 fn render_character_skills<'a>(char_skills: Vec<usize>) -> Table<'a> {
     let skill_list = read_skill_db().expect("can fetch skill list");
 
