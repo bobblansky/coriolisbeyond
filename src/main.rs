@@ -1,30 +1,31 @@
-use std::fs;
-use std::io;
-use std::thread;
-use std::sync::mpsc;
-use thiserror::Error;
-use serde::{Deserialize, Serialize};
-use std::time::{Duration, Instant};
 use crossterm::{
     event::{self, Event as CEvent, KeyCode},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
+use serde::{Deserialize, Serialize};
+use std::fs;
+use std::io;
+use std::sync::mpsc;
+use std::thread;
+use std::time::{Duration, Instant};
+use thiserror::Error;
 use tui::{
-    backend::{Backend,CrosstermBackend},
+    backend::{Backend, CrosstermBackend},
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     text::{Span, Spans},
     widgets::{
-        Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table, Tabs, Wrap, Clear
+        Block, BorderType, Borders, Cell, Clear, List, ListItem, ListState, Paragraph, Row, Table,
+        Tabs, Wrap,
     },
-    Terminal, Frame,
+    Frame, Terminal,
 };
-mod lore;
 mod banner;
-use lore::LORE;
+mod lore;
 use banner::BANNER;
-const  SKILL_DB: &str = "./data/skills.json";
+use lore::LORE;
+const SKILL_DB: &str = "./data/skills.json";
 const CHARACTER_DB: &str = "./data/character.json";
 const WEAPON_DB: &str = "./data/weapons.json";
 const ITEM_DB: &str = "./data/items.json";
@@ -35,7 +36,7 @@ const ARMOR_DB: &str = "./data/armor.json";
 fn test_path() {
     use std::path::Path;
     const NUMPATHS: usize = 5;
-    let paths: [&str;NUMPATHS] = [SKILL_DB, CHARACTER_DB, WEAPON_DB, ITEM_DB, ARMOR_DB];
+    let paths: [&str; NUMPATHS] = [SKILL_DB, CHARACTER_DB, WEAPON_DB, ITEM_DB, ARMOR_DB];
     paths.map(|p| assert_eq!(Path::new(p).exists(), true));
 }
 
@@ -162,7 +163,7 @@ enum MenuItem {
     Character,
     Skills,
     Items,
-    Lore
+    Lore,
 }
 impl From<MenuItem> for usize {
     fn from(input: MenuItem) -> usize {
@@ -171,7 +172,7 @@ impl From<MenuItem> for usize {
             MenuItem::Character => 1,
             MenuItem::Skills => 2,
             MenuItem::Items => 3,
-            MenuItem::Lore => 4
+            MenuItem::Lore => 4,
         }
     }
 }
@@ -210,7 +211,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut terminal = Terminal::new(backend)?;
     terminal.clear()?;
 
-    let menu_titles = vec!["Hem", "Karaktärer", "Talanger", "Utrustning", "Lore", "Avsluta"];
+    let menu_titles = vec![
+        "Hem",
+        "Karaktärer",
+        "Talanger",
+        "Utrustning",
+        "Lore",
+        "Avsluta",
+    ];
     let mut active_menu_item = MenuItem::Home;
     let mut list_state = ListState::default();
     let mut list_state_skills = ListState::default();
@@ -273,92 +281,102 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .divider(Span::raw("|"));
 
             rect.render_widget(tabs, chunks[0]);
-            
+
             // state machine implementation?
-            let refresh_needed : bool = current_menu == active_menu_item;
+            let refresh_needed: bool = current_menu == active_menu_item;
             match active_menu_item {
                 MenuItem::Home => {
                     homecounter = homecounter + 1;
                     let home_chunks = Layout::default()
-                    .direction(Direction::Vertical)
-                    .constraints(
-                        [
-                            Constraint::Min(30),
-                            Constraint::Ratio(3,1),
-                        ]
-                        .as_ref(),
-                    )
-                    .split(chunks[1]);
+                        .direction(Direction::Vertical)
+                        .constraints([Constraint::Min(30), Constraint::Ratio(3, 1)].as_ref())
+                        .split(chunks[1]);
                     let (banner_text, home_text) = render_home();
                     rect.render_widget(banner_text, home_chunks[0]);
                     rect.render_widget(home_text, home_chunks[1]);
-                },
+                }
                 MenuItem::Character => {
                     if refresh_needed {
-                    //derbug counter
-                    charcounter = charcounter + 1;
-                    //Big chunk, displays enitre character screen
-                    let character_chunks = Layout::default()
-                        .direction(Direction::Horizontal)
-                        .constraints(
-                            [Constraint::Percentage(20), 
-                            Constraint::Percentage(80)].as_ref(),
-                        )
-                        .split(chunks[1]);
-                    //Divides the middle block into vertical blocks for items/skills/etc
-                    let inside_chunks = Layout::default()
-                        .direction(Direction::Vertical)
-                        .constraints([
-                            //Max X där X är antal färdigheter + 2 (top/botten -linjer värda 1)
-                            Constraint::Min(19), 
-                            Constraint::Percentage(20),
-                            Constraint::Percentage(20), 
-                            Constraint::Percentage(25)].as_ref(),
-                        )
-                        .split(character_chunks[1]);
-                    let character_chunk = Layout::default()
-                        .direction(Direction::Horizontal)
-                        .constraints([
-                            Constraint::Percentage(50),
-                            Constraint::Percentage(15), 
-                            Constraint::Percentage(35)].as_ref(),
-                        )
-                        .split(inside_chunks[0]);
-                    let talent_gear_chunk = Layout::default()
-                        .direction(Direction::Horizontal)
-                        .constraints([
-                            Constraint::Percentage(50),
-                            Constraint::Percentage(50)].as_ref(),
-                    )
-                    .split(inside_chunks[1]);
-                    //get the character and render
-                    //left => name
-                    //right list character info from json
-                    let (left, right, grundegenskaper, fardigheter, char_skills_ids, weapon_ids, gear_ids, armor_ids) = render_character(&mut list_state);
-                    let (left1, _right2) = render_char_skills(&mut list_state_skills, &char_skills_ids); // char_skills
-                    let weapons = render_character_weapons(weapon_ids);
-                    let armor = render_character_armor(armor_ids);
-                    let items = render_character_items(gear_ids);
-                    rect.render_widget(items, talent_gear_chunk[1]);
-                    if select_skill_list{
-                        rect.render_widget(left, character_chunks[0]);
-                        rect.render_stateful_widget(left1, talent_gear_chunk[0], &mut list_state_skills);
+                        //derbug counter
+                        charcounter = charcounter + 1;
+                        //Big chunk, displays enitre character screen
+                        let character_chunks = Layout::default()
+                            .direction(Direction::Horizontal)
+                            .constraints(
+                                [Constraint::Percentage(20), Constraint::Percentage(80)].as_ref(),
+                            )
+                            .split(chunks[1]);
+                        //Divides the middle block into vertical blocks for items/skills/etc
+                        let inside_chunks = Layout::default()
+                            .direction(Direction::Vertical)
+                            .constraints(
+                                [
+                                    //Max X där X är antal färdigheter + 2 (top/botten -linjer värda 1)
+                                    Constraint::Min(19),
+                                    Constraint::Percentage(20),
+                                    Constraint::Percentage(20),
+                                    Constraint::Percentage(25),
+                                ]
+                                .as_ref(),
+                            )
+                            .split(character_chunks[1]);
+                        let character_chunk = Layout::default()
+                            .direction(Direction::Horizontal)
+                            .constraints(
+                                [
+                                    Constraint::Percentage(50),
+                                    Constraint::Percentage(15),
+                                    Constraint::Percentage(35),
+                                ]
+                                .as_ref(),
+                            )
+                            .split(inside_chunks[0]);
+                        let talent_gear_chunk = Layout::default()
+                            .direction(Direction::Horizontal)
+                            .constraints(
+                                [Constraint::Percentage(50), Constraint::Percentage(50)].as_ref(),
+                            )
+                            .split(inside_chunks[1]);
+                        //get the character and render
+                        //left => name
+                        //right list character info from json
+                        let (
+                            left,
+                            right,
+                            grundegenskaper,
+                            fardigheter,
+                            char_skills_ids,
+                            weapon_ids,
+                            gear_ids,
+                            armor_ids,
+                        ) = render_character(&mut list_state);
+                        let (left1, _right2) =
+                            render_char_skills(&mut list_state_skills, &char_skills_ids); // char_skills
+                        let weapons = render_character_weapons(weapon_ids);
+                        let armor = render_character_armor(armor_ids);
+                        let items = render_character_items(gear_ids);
+                        rect.render_widget(items, talent_gear_chunk[1]);
+                        if select_skill_list {
+                            rect.render_widget(left, character_chunks[0]);
+                            rect.render_stateful_widget(
+                                left1,
+                                talent_gear_chunk[0],
+                                &mut list_state_skills,
+                            );
+                        } else {
+                            rect.render_stateful_widget(left, character_chunks[0], &mut list_state);
+                            rect.render_widget(left1, talent_gear_chunk[0]);
+                        }
+                        rect.render_widget(right, character_chunk[0]);
+                        rect.render_widget(grundegenskaper, character_chunk[1]);
+                        rect.render_widget(fardigheter, character_chunk[2]);
+                        rect.render_widget(armor, inside_chunks[2]);
+                        rect.render_widget(weapons, inside_chunks[3]);
+                        if show_skill_popup {
+                            render_popup(rect, &mut list_state_skills, char_skills_ids)
+                        }
                     }
-                    else{
-                        rect.render_stateful_widget(left, character_chunks[0], &mut list_state);
-                        rect.render_widget(left1, talent_gear_chunk[0]);
-                    }
-                    rect.render_widget(right, character_chunk[0]);
-                    rect.render_widget(grundegenskaper, character_chunk[1]);
-                    rect.render_widget(fardigheter, character_chunk[2]);
-                    rect.render_widget(armor, inside_chunks[2]);
-                    rect.render_widget(weapons, inside_chunks[3]);
-                    if show_skill_popup{
-                        render_popup(rect, &mut list_state_skills, char_skills_ids)
-                    }
-                    }
-
-                },
+                }
                 //debug
                 MenuItem::Skills => {
                     //derbug counter
@@ -373,7 +391,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                     rect.render_stateful_widget(left, skill_chunks[0], &mut list_state);
                     rect.render_widget(right, skill_chunks[1]);
-                },
+                }
                 MenuItem::Items => {
                     //derbug counter
                     itemcounter = itemcounter + 1;
@@ -386,13 +404,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     let (left, right) = render_items(&mut list_state);
                     rect.render_stateful_widget(left, item_chunks[0], &mut list_state);
                     rect.render_widget(right, item_chunks[1]);
-                },
+                }
                 MenuItem::Lore => {
                     let lore_chunks = Layout::default()
                         .direction(Direction::Vertical)
-                        .constraints(
-                            [Constraint::Max(1), Constraint::Percentage(95)].as_ref(),
-                        )
+                        .constraints([Constraint::Max(1), Constraint::Percentage(95)].as_ref())
                         .horizontal_margin(10)
                         .vertical_margin(1)
                         .split(chunks[1]);
@@ -400,15 +416,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         .borders(Borders::LEFT | Borders::RIGHT)
                         .style(Style::default().fg(Color::Cyan));
 
-
-                    let lore_text = Paragraph::new(LORE).style(Style::default().add_modifier(Modifier::BOLD).fg(Color::White)).scroll((scroll,1)).block(lore_block);
+                    let lore_text = Paragraph::new(LORE)
+                        .style(
+                            Style::default()
+                                .add_modifier(Modifier::BOLD)
+                                .fg(Color::White),
+                        )
+                        .scroll((scroll, 1))
+                        .block(lore_block);
                     rect.render_widget(lore_text, lore_chunks[1]);
                 }
             }
             rect.render_widget(copyright, chunks[2]);
         })?;
-        
-        current_menu = active_menu_item; 
+
+        current_menu = active_menu_item;
         match rx.recv()? {
             Event::Input(event) => match event.code {
                 KeyCode::Char('a') => {
@@ -439,17 +461,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         if select_skill_list {
                             if let Some(selected) = list_state_skills.selected() {
                                 //TODO: use or remove?
-                                let _amount_characters = read_character_db().expect("can fetch list").len();
-                                if selected >0 {
+                                let _amount_characters =
+                                    read_character_db().expect("can fetch list").len();
+                                if selected > 0 {
                                     list_state_skills.select(Some(0));
                                 } else {
                                     list_state_skills.select(Some(selected + 1));
                                 }
                             }
-                        }
-                        else{
+                        } else {
                             if let Some(selected) = list_state.selected() {
-                                let amount_characters = read_character_db().expect("can fetch list").len();
+                                let amount_characters =
+                                    read_character_db().expect("can fetch list").len();
                                 if selected >= amount_characters - 1 {
                                     list_state.select(Some(0));
                                 } else {
@@ -499,17 +522,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     if active_menu_item == MenuItem::Character {
                         if select_skill_list {
                             if let Some(selected) = list_state_skills.selected() {
-                                let amount_skills = read_character_db().expect("can fetch list").len();
-                                if selected >0 {
+                                let amount_skills =
+                                    read_character_db().expect("can fetch list").len();
+                                if selected > 0 {
                                     list_state_skills.select(Some(selected - 1));
                                 } else {
                                     list_state_skills.select(Some(amount_skills - 1));
                                 }
                             }
-                        }
-                        else {
+                        } else {
                             if let Some(selected) = list_state.selected() {
-                                let amount_characters = read_character_db().expect("can fetch list").len();
+                                let amount_characters =
+                                    read_character_db().expect("can fetch list").len();
                                 if selected >= amount_characters - 1 {
                                     list_state.select(Some(selected - 1));
                                 } else {
@@ -550,7 +574,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         }
                     }
                 }
-               _ => {}
+                _ => {}
             },
             Event::Tick => {}
         }
@@ -561,29 +585,33 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn render_popup<B: Backend>(rect: &mut Frame<B>, list_state: &ListState, char_skills: Vec<usize>){
+fn render_popup<B: Backend>(rect: &mut Frame<B>, list_state: &ListState, char_skills: Vec<usize>) {
     let skills = read_skill_db().expect("can fetch skill list");
     let mut skill_char: Vec<_> = Vec::new();
-    for skill in skills{
-        if char_skills.contains(&skill.id){
+    for skill in skills {
+        if char_skills.contains(&skill.id) {
             skill_char.push(skill);
         }
     }
 
     let selected_skill = skill_char
-    .get(
-        list_state
-            .selected()
-            .expect("there is always a selected skill"),
-    )
-    .expect("exists")
-    .clone();
+        .get(
+            list_state
+                .selected()
+                .expect("there is always a selected skill"),
+        )
+        .expect("exists")
+        .clone();
 
     let size = rect.size();
-    let style = Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD);
+    let style = Style::default()
+        .fg(Color::Yellow)
+        .add_modifier(Modifier::BOLD);
     let span = Span::styled(selected_skill.name, style);
     let block = Block::default().title(span).borders(Borders::ALL);
-    let pop_up = Paragraph::new(selected_skill.description).wrap(Wrap{trim:true}).block(block);
+    let pop_up = Paragraph::new(selected_skill.description)
+        .wrap(Wrap { trim: true })
+        .block(block);
 
     let area = centered_rect(64, 36, size);
     rect.render_widget(Clear, area);
@@ -625,12 +653,25 @@ fn render_home<'a>() -> (Paragraph<'a>, Paragraph<'a>) {
         .wrap(Wrap {trim:true})
         .alignment(Alignment::Center)
         .style(Style::default().fg(Color::DarkGray).add_modifier(Modifier::ITALIC));
-    let banner_para = Paragraph::new(BANNER).alignment(Alignment::Center).style(Style::default().fg(Color::Cyan));
+    let banner_para = Paragraph::new(BANNER)
+        .alignment(Alignment::Center)
+        .style(Style::default().fg(Color::Cyan));
 
     (banner_para, home)
 }
 
-fn render_character<'a>(list_state: &mut ListState) -> (List<'a>, Table<'a>, Table<'a>, Table<'a>, Vec<usize>, Vec<usize>, Vec<usize>, Vec<usize>) {
+fn render_character<'a>(
+    list_state: &mut ListState,
+) -> (
+    List<'a>,
+    Table<'a>,
+    Table<'a>,
+    Table<'a>,
+    Vec<usize>,
+    Vec<usize>,
+    Vec<usize>,
+    Vec<usize>,
+) {
     let character = Block::default()
         .borders(Borders::ALL)
         .style(Style::default().fg(Color::White))
@@ -670,10 +711,30 @@ fn render_character<'a>(list_state: &mut ListState) -> (List<'a>, Table<'a>, Tab
     );
 
     let grundegenskaper_table = Table::new(vec![
-        Row::new(vec![Cell::from("Styrka"), Cell::from(Span::raw(selected_character.grundegenskaper.styrka.to_string()))]),
-        Row::new(vec![Cell::from("Kyla"), Cell::from(Span::raw(selected_character.grundegenskaper.kyla.to_string()))]),
-        Row::new(vec![Cell::from("Skärpa"), Cell::from(Span::raw(selected_character.grundegenskaper.skärpa.to_string()))]),
-        Row::new(vec![Cell::from("Känsla"), Cell::from(Span::raw(selected_character.grundegenskaper.känsla.to_string()))]),
+        Row::new(vec![
+            Cell::from("Styrka"),
+            Cell::from(Span::raw(
+                selected_character.grundegenskaper.styrka.to_string(),
+            )),
+        ]),
+        Row::new(vec![
+            Cell::from("Kyla"),
+            Cell::from(Span::raw(
+                selected_character.grundegenskaper.kyla.to_string(),
+            )),
+        ]),
+        Row::new(vec![
+            Cell::from("Skärpa"),
+            Cell::from(Span::raw(
+                selected_character.grundegenskaper.skärpa.to_string(),
+            )),
+        ]),
+        Row::new(vec![
+            Cell::from("Känsla"),
+            Cell::from(Span::raw(
+                selected_character.grundegenskaper.känsla.to_string(),
+            )),
+        ]),
     ])
     .block(
         Block::default()
@@ -687,133 +748,297 @@ fn render_character<'a>(list_state: &mut ListState) -> (List<'a>, Table<'a>, Tab
     let fardigheter_table = Table::new(vec![
         Row::new(vec![
             Cell::from("Kraftprov (STY)"),
-            Cell::from(Span::raw(selected_character.fardigheter.allmanna.kraftprov.to_string())),
+            Cell::from(Span::raw(
+                selected_character
+                    .fardigheter
+                    .allmanna
+                    .kraftprov
+                    .to_string(),
+            )),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.styrka + selected_character.fardigheter.allmanna.kraftprov).to_string()))]),
+                (selected_character.grundegenskaper.styrka
+                    + selected_character.fardigheter.allmanna.kraftprov)
+                    .to_string(),
+            )),
+        ]),
         Row::new(vec![
-            Cell::from("Manipulera (KNS)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.allmanna.manipulera.to_string())),
+            Cell::from("Manipulera (KNS)"),
+            Cell::from(Span::raw(
+                selected_character
+                    .fardigheter
+                    .allmanna
+                    .manipulera
+                    .to_string(),
+            )),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.känsla + selected_character.fardigheter.allmanna.manipulera).to_string()))]),
+                (selected_character.grundegenskaper.känsla
+                    + selected_character.fardigheter.allmanna.manipulera)
+                    .to_string(),
+            )),
+        ]),
         Row::new(vec![
-            Cell::from("Närkamp (STY)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.allmanna.närkamp.to_string())),
+            Cell::from("Närkamp (STY)"),
+            Cell::from(Span::raw(
+                selected_character.fardigheter.allmanna.närkamp.to_string(),
+            )),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.styrka + selected_character.fardigheter.allmanna.närkamp).to_string()))]),
+                (selected_character.grundegenskaper.styrka
+                    + selected_character.fardigheter.allmanna.närkamp)
+                    .to_string(),
+            )),
+        ]),
         Row::new(vec![
-            Cell::from("Rörlighet (KYL)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.allmanna.rörlighet.to_string())),
+            Cell::from("Rörlighet (KYL)"),
+            Cell::from(Span::raw(
+                selected_character
+                    .fardigheter
+                    .allmanna
+                    .rörlighet
+                    .to_string(),
+            )),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.kyla + selected_character.fardigheter.allmanna.rörlighet).to_string()))]),
+                (selected_character.grundegenskaper.kyla
+                    + selected_character.fardigheter.allmanna.rörlighet)
+                    .to_string(),
+            )),
+        ]),
         Row::new(vec![
-            Cell::from("Skjutvapen (KYL)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.allmanna.skjutvapen.to_string())),
+            Cell::from("Skjutvapen (KYL)"),
+            Cell::from(Span::raw(
+                selected_character
+                    .fardigheter
+                    .allmanna
+                    .skjutvapen
+                    .to_string(),
+            )),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.kyla + selected_character.fardigheter.allmanna.skjutvapen).to_string()))]),
+                (selected_character.grundegenskaper.kyla
+                    + selected_character.fardigheter.allmanna.skjutvapen)
+                    .to_string(),
+            )),
+        ]),
         Row::new(vec![
-            Cell::from("Smyga (KYL)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.allmanna.smyga.to_string())),
+            Cell::from("Smyga (KYL)"),
+            Cell::from(Span::raw(
+                selected_character.fardigheter.allmanna.smyga.to_string(),
+            )),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.kyla + selected_character.fardigheter.allmanna.smyga).to_string()))]),
+                (selected_character.grundegenskaper.kyla
+                    + selected_character.fardigheter.allmanna.smyga)
+                    .to_string(),
+            )),
+        ]),
         Row::new(vec![
-            Cell::from("Spaning (SKP)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.allmanna.spaning.to_string())),
+            Cell::from("Spaning (SKP)"),
+            Cell::from(Span::raw(
+                selected_character.fardigheter.allmanna.spaning.to_string(),
+            )),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.skärpa + selected_character.fardigheter.allmanna.spaning).to_string()))]),
+                (selected_character.grundegenskaper.skärpa
+                    + selected_character.fardigheter.allmanna.spaning)
+                    .to_string(),
+            )),
+        ]),
         Row::new(vec![
-            Cell::from("Överlevnad (SKP)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.allmanna.överlevnad.to_string())),
+            Cell::from("Överlevnad (SKP)"),
+            Cell::from(Span::raw(
+                selected_character
+                    .fardigheter
+                    .allmanna
+                    .överlevnad
+                    .to_string(),
+            )),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                (selected_character.grundegenskaper.skärpa + selected_character.fardigheter.allmanna.överlevnad).to_string()))]),
+                (selected_character.grundegenskaper.skärpa
+                    + selected_character.fardigheter.allmanna.överlevnad)
+                    .to_string(),
+            )),
+        ]),
         Row::new(vec![Cell::from("- Kvalificerade -")]),
         Row::new(vec![
-            Cell::from("Befäl (KNS)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.kvalificerade.befäl.to_string())),
+            Cell::from("Befäl (KNS)"),
+            Cell::from(Span::raw(
+                selected_character
+                    .fardigheter
+                    .kvalificerade
+                    .befäl
+                    .to_string(),
+            )),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
                 if selected_character.fardigheter.kvalificerade.befäl > 0 {
-                    (selected_character.grundegenskaper.känsla + selected_character.fardigheter.kvalificerade.befäl).to_string()
-                }
-                else { String::from("0") }
-                ))]),
+                    (selected_character.grundegenskaper.känsla
+                        + selected_character.fardigheter.kvalificerade.befäl)
+                        .to_string()
+                } else {
+                    String::from("0")
+                },
+            )),
+        ]),
         Row::new(vec![
-            Cell::from("Datadjinn (SKP)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.kvalificerade.datadjinn.to_string())),
+            Cell::from("Datadjinn (SKP)"),
+            Cell::from(Span::raw(
+                selected_character
+                    .fardigheter
+                    .kvalificerade
+                    .datadjinn
+                    .to_string(),
+            )),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
                 if selected_character.fardigheter.kvalificerade.datadjinn > 0 {
-                    (selected_character.grundegenskaper.skärpa + selected_character.fardigheter.kvalificerade.datadjinn).to_string()
-                }
-                else { String::from("0") }
-                ))]),
+                    (selected_character.grundegenskaper.skärpa
+                        + selected_character.fardigheter.kvalificerade.datadjinn)
+                        .to_string()
+                } else {
+                    String::from("0")
+                },
+            )),
+        ]),
         Row::new(vec![
-            Cell::from("Horisontens kultur (KNS)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.kvalificerade.horistonens_kultur.to_string())),
+            Cell::from("Horisontens kultur (KNS)"),
+            Cell::from(Span::raw(
+                selected_character
+                    .fardigheter
+                    .kvalificerade
+                    .horistonens_kultur
+                    .to_string(),
+            )),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                if selected_character.fardigheter.kvalificerade.horistonens_kultur > 0 {
-                    (selected_character.grundegenskaper.känsla + selected_character.fardigheter.kvalificerade.horistonens_kultur).to_string()
-                }
-                else { String::from("0") }
-                ))]),
+                if selected_character
+                    .fardigheter
+                    .kvalificerade
+                    .horistonens_kultur
+                    > 0
+                {
+                    (selected_character.grundegenskaper.känsla
+                        + selected_character
+                            .fardigheter
+                            .kvalificerade
+                            .horistonens_kultur)
+                        .to_string()
+                } else {
+                    String::from("0")
+                },
+            )),
+        ]),
         Row::new(vec![
-            Cell::from("Medikurgi (SKP)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.kvalificerade.medikrugi.to_string())),
+            Cell::from("Medikurgi (SKP)"),
+            Cell::from(Span::raw(
+                selected_character
+                    .fardigheter
+                    .kvalificerade
+                    .medikrugi
+                    .to_string(),
+            )),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
                 if selected_character.fardigheter.kvalificerade.medikrugi > 0 {
-                    (selected_character.grundegenskaper.skärpa + selected_character.fardigheter.kvalificerade.medikrugi).to_string()
-                }
-                else { String::from("0") }
-                ))]),
+                    (selected_character.grundegenskaper.skärpa
+                        + selected_character.fardigheter.kvalificerade.medikrugi)
+                        .to_string()
+                } else {
+                    String::from("0")
+                },
+            )),
+        ]),
         Row::new(vec![
-            Cell::from("Mystiska krafter (KNS)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.kvalificerade.mystiska_krafter.to_string())),
+            Cell::from("Mystiska krafter (KNS)"),
+            Cell::from(Span::raw(
+                selected_character
+                    .fardigheter
+                    .kvalificerade
+                    .mystiska_krafter
+                    .to_string(),
+            )),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
-                if selected_character.fardigheter.kvalificerade.mystiska_krafter > 0 {
-                    (selected_character.grundegenskaper.känsla + selected_character.fardigheter.kvalificerade.mystiska_krafter).to_string()
-                } 
-                else { String::from("0") }
-            ))]),
+                if selected_character
+                    .fardigheter
+                    .kvalificerade
+                    .mystiska_krafter
+                    > 0
+                {
+                    (selected_character.grundegenskaper.känsla
+                        + selected_character
+                            .fardigheter
+                            .kvalificerade
+                            .mystiska_krafter)
+                        .to_string()
+                } else {
+                    String::from("0")
+                },
+            )),
+        ]),
         Row::new(vec![
-            Cell::from("Pilot (KYL)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.kvalificerade.pilot.to_string())),
+            Cell::from("Pilot (KYL)"),
+            Cell::from(Span::raw(
+                selected_character
+                    .fardigheter
+                    .kvalificerade
+                    .pilot
+                    .to_string(),
+            )),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
                 if selected_character.fardigheter.kvalificerade.pilot > 0 {
-                    (selected_character.grundegenskaper.kyla + selected_character.fardigheter.kvalificerade.pilot).to_string()
-                }
-                else { String::from("0") }
-            ))]),
+                    (selected_character.grundegenskaper.kyla
+                        + selected_character.fardigheter.kvalificerade.pilot)
+                        .to_string()
+                } else {
+                    String::from("0")
+                },
+            )),
+        ]),
         Row::new(vec![
-            Cell::from("Teknologi (SKP)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.kvalificerade.teknologi.to_string())),
+            Cell::from("Teknologi (SKP)"),
+            Cell::from(Span::raw(
+                selected_character
+                    .fardigheter
+                    .kvalificerade
+                    .teknologi
+                    .to_string(),
+            )),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
                 if selected_character.fardigheter.kvalificerade.teknologi > 0 {
-                    (selected_character.grundegenskaper.skärpa + selected_character.fardigheter.kvalificerade.teknologi).to_string()
-                }
-                else { String::from("0") }
-            ))]),
+                    (selected_character.grundegenskaper.skärpa
+                        + selected_character.fardigheter.kvalificerade.teknologi)
+                        .to_string()
+                } else {
+                    String::from("0")
+                },
+            )),
+        ]),
         Row::new(vec![
-            Cell::from("Vetenskap (SKP)"), 
-            Cell::from(Span::raw(selected_character.fardigheter.kvalificerade.vetenskap.to_string())),
+            Cell::from("Vetenskap (SKP)"),
+            Cell::from(Span::raw(
+                selected_character
+                    .fardigheter
+                    .kvalificerade
+                    .vetenskap
+                    .to_string(),
+            )),
             Cell::from(Span::raw(" => ")),
             Cell::from(Span::raw(
                 if selected_character.fardigheter.kvalificerade.vetenskap > 0 {
-                    (selected_character.grundegenskaper.skärpa + selected_character.fardigheter.kvalificerade.vetenskap).to_string()
-                } 
-                else { String::from("0") }
-            ))]),
+                    (selected_character.grundegenskaper.skärpa
+                        + selected_character.fardigheter.kvalificerade.vetenskap)
+                        .to_string()
+                } else {
+                    String::from("0")
+                },
+            )),
+        ]),
     ])
     .block(
         Block::default()
@@ -826,41 +1051,52 @@ fn render_character<'a>(list_state: &mut ListState) -> (List<'a>, Table<'a>, Tab
         Constraint::Percentage(30),
         Constraint::Percentage(2),
         Constraint::Percentage(5),
-        Constraint::Percentage(5)]);
+        Constraint::Percentage(5),
+    ]);
 
     let character_detail = Table::new(vec![
         Row::new(vec![
             Cell::from(Span::raw("Klass: ")),
-            Cell::from(Span::raw(selected_character.class))]),
+            Cell::from(Span::raw(selected_character.class)),
+        ]),
         Row::new(vec![
             Cell::from(Span::raw("Position: ")),
-            Cell::from(Span::raw(selected_character.ship_position))]),
+            Cell::from(Span::raw(selected_character.ship_position)),
+        ]),
         Row::new(vec![
             Cell::from(Span::raw("Bakgrund: ")),
-            Cell::from(Span::raw(selected_character.background))]),
+            Cell::from(Span::raw(selected_character.background)),
+        ]),
         Row::new(vec![
             Cell::from(Span::raw("Uppväxt: ")),
-            Cell::from(Span::raw(selected_character.upbringing))]),
+            Cell::from(Span::raw(selected_character.upbringing)),
+        ]),
         Row::new(vec![
             Cell::from(Span::raw("Gruppkoncept: ")),
-            Cell::from(Span::raw(selected_character.group_concept))]),
+            Cell::from(Span::raw(selected_character.group_concept)),
+        ]),
         Row::new(vec![
             Cell::from(Span::raw("Ikon: ")),
-            Cell::from(Span::raw(selected_character.icon))]),
+            Cell::from(Span::raw(selected_character.icon)),
+        ]),
         Row::new(vec![
             Cell::from(Span::raw("Problem: ")),
-            Cell::from(Span::raw(selected_character.problem))]),
+            Cell::from(Span::raw(selected_character.problem)),
+        ]),
         Row::new(vec![
             Cell::from(Span::raw("Birr: ")),
-            Cell::from(Span::raw(selected_character.birr.to_string()))]),
+            Cell::from(Span::raw(selected_character.birr.to_string())),
+        ]),
         Row::new(vec![Cell::from(Span::raw("\n\n"))]),
         Row::new(vec![Cell::from(Span::raw("Utseende\n "))]),
         Row::new(vec![
             Cell::from(Span::raw("Ansikte: ")),
-            Cell::from(Span::raw(selected_character.appearance.face))]),
+            Cell::from(Span::raw(selected_character.appearance.face)),
+        ]),
         Row::new(vec![
             Cell::from(Span::raw("Kläder: ")),
-            Cell::from(Span::raw(selected_character.appearance.clothing))]),
+            Cell::from(Span::raw(selected_character.appearance.clothing)),
+        ]),
     ])
     .block(
         Block::default()
@@ -871,15 +1107,15 @@ fn render_character<'a>(list_state: &mut ListState) -> (List<'a>, Table<'a>, Tab
     )
     .widths(&[Constraint::Percentage(15), Constraint::Percentage(80)]);
 
-
-    (list, 
-    character_detail, 
-    grundegenskaper_table,
-    fardigheter_table, 
-    selected_character.skill_ids, 
-    selected_character.weapon_ids,
-    selected_character.gear_ids,
-    selected_character.armor_ids,
+    (
+        list,
+        character_detail,
+        grundegenskaper_table,
+        fardigheter_table,
+        selected_character.skill_ids,
+        selected_character.weapon_ids,
+        selected_character.gear_ids,
+        selected_character.armor_ids,
     )
 }
 
@@ -895,16 +1131,18 @@ fn render_skills<'a>(list_state: &mut ListState) -> (List<'a>, Paragraph<'a>) {
     if list_state.selected().unwrap() > skill_list.len() {
         list_state.select(Some(0));
     }
-    
-    let mut category  = String::from("");
+
+    let mut category = String::from("");
     let items: Vec<_> = skill_list
         .iter()
         .map(|skill| {
             if category != skill.category {
-                category = skill.category.clone();     
-                ListItem::new(Spans::from(vec![
-                    Span::styled(skill.category.clone(),
-                    Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD)
+                category = skill.category.clone();
+                ListItem::new(Spans::from(vec![Span::styled(
+                    skill.category.clone(),
+                    Style::default()
+                        .fg(Color::Cyan)
+                        .add_modifier(Modifier::BOLD),
                 )]))
             } else {
                 ListItem::new(Spans::from(vec![Span::styled(
@@ -932,7 +1170,7 @@ fn render_skills<'a>(list_state: &mut ListState) -> (List<'a>, Paragraph<'a>) {
     );
 
     let skill_detail = Paragraph::new(selected_skill.description)
-        .wrap(Wrap{trim:true})
+        .wrap(Wrap { trim: true })
         .block(
             Block::default()
                 .borders(Borders::ALL)
@@ -944,22 +1182,25 @@ fn render_skills<'a>(list_state: &mut ListState) -> (List<'a>, Paragraph<'a>) {
     (list, skill_detail)
 }
 
-fn render_char_skills<'a>(list_state: &mut ListState, char_skills: &Vec<usize>) -> (List<'a>, Paragraph<'a>) {
+fn render_char_skills<'a>(
+    list_state: &mut ListState,
+    char_skills: &Vec<usize>,
+) -> (List<'a>, Paragraph<'a>) {
     let skills = Block::default()
-    .borders(Borders::ALL)
-    .style(Style::default().fg(Color::White))
-    .title("Talanger")
-    .border_type(BorderType::Plain);
+        .borders(Borders::ALL)
+        .style(Style::default().fg(Color::White))
+        .title("Talanger")
+        .border_type(BorderType::Plain);
 
     let skill_list = read_skill_db().expect("can fetch skill list");
     let mut skill_char: Vec<_> = Vec::new();
-    
-    for skill in  skill_list{
-        if char_skills.contains(&skill.id){
+
+    for skill in skill_list {
+        if char_skills.contains(&skill.id) {
             skill_char.push(skill);
         }
     }
-    let skill_list_len = skill_char.len()-1;
+    let skill_list_len = skill_char.len() - 1;
     let items: Vec<_> = skill_char
         .iter()
         .map(|skill| {
@@ -989,14 +1230,13 @@ fn render_char_skills<'a>(list_state: &mut ListState, char_skills: &Vec<usize>) 
             .add_modifier(Modifier::BOLD),
     );
 
-    let skill_detail = Paragraph::new(selected_skill.description)
-        .block(
-            Block::default()
-                .borders(Borders::ALL)
-                .style(Style::default().fg(Color::White))
-                .title(selected_skill.name)
-                .border_type(BorderType::Plain),
-        );
+    let skill_detail = Paragraph::new(selected_skill.description).block(
+        Block::default()
+            .borders(Borders::ALL)
+            .style(Style::default().fg(Color::White))
+            .title(selected_skill.name)
+            .border_type(BorderType::Plain),
+    );
 
     (list, skill_detail)
 }
@@ -1009,10 +1249,8 @@ fn render_character_skills<'a>(char_skills: Vec<usize>) -> Table<'a> {
 
     for skill in skill_list {
         if char_skills.contains(&skill.id) {
-            rows.push(
-                Row::new(vec![Cell::from(Span::raw(skill.name))]));
-            rows.push(
-                Row::new(vec![Cell::from(Span::raw(skill.description))]));
+            rows.push(Row::new(vec![Cell::from(Span::raw(skill.name))]));
+            rows.push(Row::new(vec![Cell::from(Span::raw(skill.description))]));
         }
     }
 
@@ -1040,16 +1278,14 @@ fn render_character_items<'a>(char_skills: Vec<usize>) -> List<'a> {
 
     for skill in item_list {
         if char_skills.contains(&skill.id) {
-            items.push(
-                ListItem::new(Spans::from(vec![
-                    (Span::raw(skill.name.clone()))
-                ]))
-            );
+            items.push(ListItem::new(Spans::from(vec![
+                (Span::raw(skill.name.clone())),
+            ])));
         }
     }
 
     let list = List::new(items).block(item_block);
-    
+
     list
 }
 
@@ -1092,14 +1328,13 @@ fn render_items<'a>(list_state: &mut ListState) -> (List<'a>, Paragraph<'a>) {
             .add_modifier(Modifier::BOLD),
     );
 
-    let item_detail = Paragraph::new(selected_item.description)
-        .block(
-            Block::default()
-                .borders(Borders::ALL)
-                .style(Style::default().fg(Color::White))
-                .title(selected_item.name)
-                .border_type(BorderType::Plain),
-        );
+    let item_detail = Paragraph::new(selected_item.description).block(
+        Block::default()
+            .borders(Borders::ALL)
+            .style(Style::default().fg(Color::White))
+            .title(selected_item.name)
+            .border_type(BorderType::Plain),
+    );
 
     (list, item_detail)
 }
@@ -1111,33 +1346,38 @@ fn render_character_weapons<'a>(char_weapons: Vec<usize>) -> Table<'a> {
 
     for weapon in weapon_list {
         if char_weapons.contains(&weapon.id) {
-            rows.push(
-                Row::new(vec![
-                    Cell::from(Span::raw(weapon.namn)),
-                    Cell::from(Span::raw(weapon.bonus.to_string())),
-                    Cell::from(Span::raw(weapon.init.to_string())),
-                    Cell::from(Span::raw(weapon.skada.to_string())),
-                    Cell::from(Span::raw(weapon.krit.to_string())),
-                    Cell::from(Span::raw(weapon.räckvidd)),
-                    Cell::from(Span::raw(weapon.övrigt))
-                ])
-            );
+            rows.push(Row::new(vec![
+                Cell::from(Span::raw(weapon.namn)),
+                Cell::from(Span::raw(weapon.bonus.to_string())),
+                Cell::from(Span::raw(weapon.init.to_string())),
+                Cell::from(Span::raw(weapon.skada.to_string())),
+                Cell::from(Span::raw(weapon.krit.to_string())),
+                Cell::from(Span::raw(weapon.räckvidd)),
+                Cell::from(Span::raw(weapon.övrigt)),
+            ]));
         }
     }
     let normal_style = Style::default().bg(Color::DarkGray);
-    let header_cells = ["Weapon", "Bonus", "Init", "Skada", "Krit", "Räckvidd", "Övrigt"]
-        .iter()
-        .map(|h| Cell::from(*h).style(Style::default().fg(Color::White)));
-    let header = Row::new(header_cells)
-        .style(normal_style);
+    let header_cells = [
+        "Weapon",
+        "Bonus",
+        "Init",
+        "Skada",
+        "Krit",
+        "Räckvidd",
+        "Övrigt",
+    ]
+    .iter()
+    .map(|h| Cell::from(*h).style(Style::default().fg(Color::White)));
+    let header = Row::new(header_cells).style(normal_style);
     let char_weapon_table = Table::new(rows)
         .header(header)
         .block(
             Block::default()
                 .borders(Borders::ALL)
                 .style(Style::default().fg(Color::White))
-                        .title("Vapen")
-                        .border_type(BorderType::Plain),
+                .title("Vapen")
+                .border_type(BorderType::Plain),
         )
         .widths(&[
             Constraint::Min(20),
@@ -1146,8 +1386,8 @@ fn render_character_weapons<'a>(char_weapons: Vec<usize>) -> Table<'a> {
             Constraint::Percentage(10),
             Constraint::Percentage(10),
             Constraint::Percentage(20),
-            Constraint::Percentage(20)
-            ]);
+            Constraint::Percentage(20),
+        ]);
 
     char_weapon_table
 }
@@ -1159,66 +1399,62 @@ fn render_character_armor<'a>(char_armor: Vec<usize>) -> Table<'a> {
 
     for armor in armor_list {
         if char_armor.contains(&armor.id) {
-            rows.push(
-                Row::new(vec![
-                    Cell::from(Span::raw(armor.name)),
-                    Cell::from(Span::raw(armor.rating.to_string())),
-                    Cell::from(Span::raw(armor.comment)),
-                ])
-            );
+            rows.push(Row::new(vec![
+                Cell::from(Span::raw(armor.name)),
+                Cell::from(Span::raw(armor.rating.to_string())),
+                Cell::from(Span::raw(armor.comment)),
+            ]));
         }
     }
     let normal_style = Style::default().bg(Color::DarkGray);
     let header_cells = ["Rustning", "Skydd", "Övrigt"]
         .iter()
         .map(|h| Cell::from(*h).style(Style::default().fg(Color::White)));
-    let header = Row::new(header_cells)
-        .style(normal_style);
+    let header = Row::new(header_cells).style(normal_style);
     let char_armor_table = Table::new(rows)
         .header(header)
         .block(
             Block::default()
                 .borders(Borders::ALL)
                 .style(Style::default().fg(Color::White))
-                        .title("Rustning")
-                        .border_type(BorderType::Plain),
+                .title("Rustning")
+                .border_type(BorderType::Plain),
         )
         .widths(&[
             Constraint::Min(20),
             Constraint::Percentage(10),
             Constraint::Percentage(50),
-            ]);
+        ]);
 
     char_armor_table
 }
 
-fn read_skill_db() -> Result<Vec<Skill>, Error > {
+fn read_skill_db() -> Result<Vec<Skill>, Error> {
     let db_content = fs::read_to_string(SKILL_DB)?;
     let parsed: Vec<Skill> = serde_json::from_str(&db_content)?;
     Ok(parsed)
 }
 
-fn read_character_db() -> Result<Vec<Character>, Error > {
+fn read_character_db() -> Result<Vec<Character>, Error> {
     let db_content = fs::read_to_string(CHARACTER_DB)?;
     let parsed: Vec<Character> = serde_json::from_str(&db_content)?;
     Ok(parsed)
 }
 
-fn read_weapon_db() -> Result<Vec<Weapon>, Error > {
+fn read_weapon_db() -> Result<Vec<Weapon>, Error> {
     let db_content = fs::read_to_string(WEAPON_DB)?;
     let parsed: Vec<Weapon> = serde_json::from_str(&db_content)?;
     Ok(parsed)
 }
 
-fn read_item_db() -> Result<Vec<Item>, Error > {
+fn read_item_db() -> Result<Vec<Item>, Error> {
     let db_content = fs::read_to_string(ITEM_DB)?;
     let parsed: Vec<Item> = serde_json::from_str(&db_content)?;
     Ok(parsed)
 }
 
-fn read_armor_db() -> Result<Vec<Armor>, Error > {
+fn read_armor_db() -> Result<Vec<Armor>, Error> {
     let db_content = fs::read_to_string(ARMOR_DB)?;
     let parsed: Vec<Armor> = serde_json::from_str(&db_content)?;
     Ok(parsed)
 }
-
